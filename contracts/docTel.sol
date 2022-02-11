@@ -57,4 +57,35 @@ contract DocTel{
     mapping(uint=>Admin) public adminAadhars;
     mapping(address=>Admin) public adminAddrs;
 
+    function addPatient(uint _patient_Id, uint _patientAadhar, uint _weight, uint _height, uint _gender, uint _dob, uint _bloodType, string calldata _location) public {
+        bool isExisting = (patientAadhars[_patientAadhar].patient_Id != 0);
+        if (!isExisting) {                    //add
+            patientCount++;
+            Patient memory pat;
+            pat.patient_Id = patientCount;
+            pat.patientAadhar = _patientAadhar;
+            pat.weight = _weight;
+            pat.height = _height;
+            pat.gender = _gender;
+            pat.dob = _dob;
+            pat.bloodType = _bloodType;
+            pat.location = _location;
+            patientIds[patientCount] = pat;
+            patientAadhars[_patientAadhar] = pat;  
+        }
+        else {
+            Patient memory pat = patientAadhars[_patientAadhar];
+            pat.patientAadhar = _patientAadhar;
+            pat.weight = _weight;
+            pat.height = _height;
+            pat.gender = _gender;
+            pat.dob = _dob;
+            pat.bloodType = _bloodType;
+            pat.location = _location;
+            patientIds[patientCount] = pat;
+            patientAadhars[_patientAadhar] = pat;      
+        }
+    }
+
+
 }
