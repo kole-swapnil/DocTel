@@ -46,4 +46,15 @@ contract DocTel{
         string[] reports;
     }
 
+    mapping(uint=>Patient) public patientIds;
+    mapping(uint=>Patient) public patientAadhars;
+
+    mapping(uint=>Doctor) public doctorIds;
+    mapping(uint=>Doctor) public doctorAadhars;
+    mapping(address=>Doctor) public doctorAddrs;
+
+    mapping(uint=>Admin) public adminIds;
+    mapping(uint=>Admin) public adminAadhars;
+    mapping(address=>Admin) public adminAddrs;
+
 }
