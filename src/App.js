@@ -3,13 +3,11 @@ import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-           <code>DocTel Application</code>
-        </p>
-      </header>
-    </div>
+    <BrowserRouter>
+      <div className="App">
+        <Main/>
+      </div>
+    </BrowserRouter>
   );
 }
 
