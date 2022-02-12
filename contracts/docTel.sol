@@ -23,7 +23,7 @@ contract DocTel{
     struct Doctor {
         uint doctor_Id;
         uint doctorAadhar;
-        uint doctorAddress;
+        address doctorAddress;
         string speciality;
         string[] certifications;
         uint[] doneTreatment;
@@ -57,7 +57,7 @@ contract DocTel{
     mapping(uint=>Admin) public adminAadhars;
     mapping(address=>Admin) public adminAddrs;
 
-    function addPatient(uint _patient_Id, uint _patientAadhar, uint _weight, uint _height, uint _gender, uint _dob, uint _bloodType, string calldata _location) public {
+    function addPatient(uint _patientAadhar, uint _weight, uint _height, uint _gender, uint _dob, uint _bloodType, string calldata _location) public {
         bool isExisting = (patientAadhars[_patientAadhar].patient_Id != 0);
         if (!isExisting) {                    //add
             patientCount++;
@@ -73,7 +73,7 @@ contract DocTel{
             patientIds[patientCount] = pat;
             patientAadhars[_patientAadhar] = pat;  
         }
-        else {
+        else {                                  //modify
             Patient memory pat = patientAadhars[_patientAadhar];
             pat.patientAadhar = _patientAadhar;
             pat.weight = _weight;
@@ -87,5 +87,55 @@ contract DocTel{
         }
     }
 
+    function addDoctor (uint _doctorAadhar, address _doctorAddress, string calldata _speciality, string calldata _location) public {
+        bool isExisting = (doctorAadhars[_doctorAadhar].doctor_Id != 0);
+        if (!isExisting) {
+            doctorCount++;
+            Doctor memory doc;
+            doc.doctor_Id = doctorCount;
+            doc.doctorAadhar = _doctorAadhar;
+            doc.doctorAddress = _doctorAddress;
+            doc.speciality = _speciality;
+            doc.location = _location;
+            doctorIds[doctorCount] = doc;
+            doctorAadhars[_doctorAadhar] = doc;
+            doctorAddrs[_doctorAddress] = doc;
+        }                    
+        else {
+            Doctor memory doc = doctorAadhars[_doctorAadhar];
+            doc.doctor_Id = doctorCount;
+            doc.doctorAadhar = _doctorAadhar;
+            doc.doctorAddress = _doctorAddress;
+            doc.speciality = _speciality;
+            doc.location = _location;
+            doctorIds[doctorCount] = doc;
+            doctorAadhars[_doctorAadhar] = doc;
+            doctorAddrs[_doctorAddress] = doc;
+            
+        }
+    }
 
+    function addAdmin (uint _adminAadhar, address _adminAddr, string calldata _role) public {
+        bool isExisting = (adminAadhars[_adminAadhar].admin_Id != 0);
+        if (!isExisting) {
+            adminCount++;
+            Admin memory adm;
+            adm.admin_Id = adminCount;
+            adm.adminAadhar = _adminAadhar;
+            adm.adminAddr = _adminAddr;
+            adm.role = _role;
+            adminIds[adminCount] = adm;
+            adminAadhars[_adminAadhar] = adm;
+            adminAddrs[_adminAddr] = adm;
+        }   
+        else {
+            Admin memory adm;
+            adm.adminAadhar = _adminAadhar;
+            adm.adminAddr = _adminAddr;
+            adm.role = _role;
+            adminIds[adminCount] = adm;
+            adminAadhars[_adminAadhar] = adm;
+            adminAddrs[_adminAddr] = adm;    
+        }    
+    }
 }
