@@ -3,6 +3,9 @@ import BNContract from "../Contracts/DocTel.json";
 import getWeb3 from "../getWeb3";
 import "../App.css";
 import { Switch, Route, Redirect } from 'react-router-dom';
+import Header from "./HeaderComponent";
+import Footer from "./FooterComponent";
+import Home from "./HomeComponent";
 
 class Main extends Component {
     constructor(props) {
@@ -45,19 +48,12 @@ class Main extends Component {
                 <Header/>
                     <Switch>
                         <Route exact path="/home" component={() => <Home contract={this.state.contract} accounts={this.state.accounts} />}/>
-                        <Route path='/doctor' component={() => <DoctorComp contract={this.state.contract} accounts={this.state.accounts}/>} />
-                        <Route path='/treatment' component={() => <TreatmentComp contract={this.state.contract} accounts={this.state.accounts}/>}/>
-                        <Route path='/docs' component={() => <AllDocsComponent contract={this.state.contract} accounts={this.state.accounts}/>}/>
-                        <Route path='/patient' component={() => <PatientComp contract={this.state.contract} accounts={this.state.accounts}/>}/>
-                        <Route path='/treat' component={() => <AllTreatmentComponent contract={this.state.contract} accounts={this.state.accounts}/>}/>
-                        <Route path='/patdata' component={() => <GetPatient contract={this.state.contract} accounts={this.state.accounts}/>}/>
                         <Redirect to="/home"/>
                     </Switch>
                 <Footer/>
             </div>
         )
     }
-
 }
 
 export default Main;
