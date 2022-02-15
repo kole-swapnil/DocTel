@@ -1,0 +1,222 @@
+import React, { Component } from 'react';
+import {Button, Alert } from 'reactstrap';
+import {Link } from 'react-router-dom';
+import '../App.css'
+import './SignupComponent.css';
+
+class SignUp extends Component{
+    constructor(props){
+        super(props);
+        this.state={
+            fullname: '',
+            aadhar: 0, 
+            role: '',
+            adminWallets: [],
+            userAddrs: [],
+            children: '',
+            validate: <div></div>
+        };
+        this.handleSubmitUser = this.handleSubmitUser.bind(this);
+        this.handleSubmitAdmin = this.handleSubmitAdmin.bind(this);
+        this.handleSubmitGovt = this.handleSubmitGovt.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
+        this.addingAdmin = this.addingAdmin.bind(this);
+        this.addingUser = this.addingUser.bind(this);
+        this.handleLogIn = this.handleLogIn.bind(this);
+        this.handleLogOut = this.handleLogOut.bind(this);
+        this.onDismiss = this.onDismiss.bind(this);
+    }
+
+    handleInputChange(event){
+        event.preventDefault();
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState({
+            [name] : value
+        })
+    }
+    
+    async handleSubmitAdmin(event){
+        event.preventDefault();
+        if (this.handleValidateAdmin(this.props.accounts)) {
+            this.addingAdmin();
+        }
+        else {
+            let validate = 
+                <div key={1}>
+                    <Alert color="warning" toggle={this.onDismiss} fade={false}>
+                        Do a login with same wallet. Account already exists
+                    </Alert>
+                </div>;
+            this.setState({
+                validate: validate
+            })
+        }
+    }
+
+    async handleSubmitUser(event){
+        event.preventDefault();
+        if (this.handleValidateUser(this.state.aadhar)) {
+            this.addingUser();
+        }
+        else {
+            let validate = 
+                <div key={1}>
+                    <Alert color="warning" toggle={this.onDismiss} fade={false}>
+                        Account with this Aadhar No. already exists. Please Login.
+                    </Alert>
+                </div>;
+            this.setState({
+                validate: validate
+            })   
+        }
+    }
+    async handleSubmitGovt(event){
+        event.preventDefault();
+         if(this.props.accounts == '0xC0EC435ad729B545d645bA3A83C74872D585e282'){
+       
+        }
+    }
+
+    addingAdmin = async() => {
+        console.log(this.state.aadhar,this.state.role);
+        const res = await this.props.contract.methods.addAdmin(this.state.aadhar,this.state.role).send({from: this.props.accounts, gas: 1000000});
+    }
+
+    addingUser = async() => {
+        console.log(this.state.aadhar);
+        let children = this.state.children.split(',');
+        let childrenAadhar = children.map(el => Number(el));
+        console.log("children",childrenAadhar)
+        const res = await this.props.contract.methods.addPerson(this.state.aadhar, childrenAadhar).send({from: this.props.accounts, gas: 1000000});
+    }
+    
+    handleLogIn = async(event) => {
+        event.preventDefault();
+        if ((!this.handleValidateUser(this.state.aadhar) || this.handleValidateAdmin(this.state.aadhar))) {
+            localStorage.setItem('myAadhar', this.state.aadhar);
+            this.props.changeAadhar(localStorage.getItem('myAadhar'));
+        }
+        else {
+            let validate = 
+                <div key={1}>
+                    <Alert color="warning" toggle={this.onDismiss} fade={false}>
+                        Account with this Aadhar No. does not exist. Please Signup.
+                    </Alert>
+                </div>;
+            this.setState({
+                validate: validate
+            })   
+        }
+    }
+    
+    handleLogOut = async(event) => {
+        event.preventDefault();
+        let y = localStorage.setItem('myAadhar',0);
+        this.props.changeAadhar(localStorage.getItem('myAadhar'));
+    }   
+
+    handleValidateAdmin = (wallet) => {
+        if(this.state.adminWallets.includes(wallet)) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    } 
+
+    handleValidateUser = (aadhar) => {
+        if(this.state.userAddrs.includes(aadhar.toString())) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    } 
+    onDismiss = () => this.setState({validate: <div></div>});
+    async componentDidMount() {
+        var resAdminCount = await this.props.contract?.methods.adminCount().call();
+        var responseAdminsWallets= [];
+        for(var i=1;i<=resAdminCount;i++){
+            var resAdmin = await this.props.contract?.methods.AdminIds(i).call();
+            responseAdminsWallets.push(resAdmin);
+        }   
+        var resPersonCount = await this.props.contract?.methods.personCount().call();
+        var responsePersons= [];
+        for(var i=1;i<=resPersonCount;i++){
+            var resPerson = await this.props.contract?.methods.personIds(i).call();
+            responsePersons.push(resPerson);
+        }
+        let personAddrs = responsePersons.map((ele) => {
+            return ele.perAadharno;
+        })
+        this.setState({
+            adminWallets: responseAdminsWallets,
+            userAddrs: personAddrs
+        })
+        console.log(this.state.adminWallets, this.state.userAddrs);
+    }
+
+    render(){
+        return(
+            <React.Fragment>
+                <h1 className="head">SignUp Page</h1>
+                <div className="row">
+                    {this.state.validate}
+                </div>
+                    <div className="fullbox">     
+                        <div className="box1">
+                            <h6 className="heading-style">Admin</h6>
+                            <div className="sub-box1">
+                                <i className="fa fa-user-circle-o fa-4x" aria-hidden="true" style={{paddingBottom: "5%"}}></i>
+                                <br/>
+
+                                <div className="p-2">
+                                    <label className="label1"> Name: </label><br/>
+                                    <input className="input1" type="text" name="fullname" placeholder="Enter name" onChange={this.handleInputChange} required/>
+                                </div> 
+
+                                <div className="p-2">
+                                    <label className="label1"> Aadhar Number: </label><br/>
+                                    <input className="input1" type="number" name="aadhar" placeholder="Enter Aadhar Number" onChange={this.handleInputChange} required/>
+                                </div>
+
+                                <div className="p-2">
+                                    <label className="label1"> Role: </label><br/>
+                                    <input className="input1" type="text" name="role" placeholder="Enter Role" onChange={this.handleInputChange} required/>
+                                </div>
+                                <button className="signup-btn btn btn-block btn-sm btn-primary text-uppercase pl-3 pr-3" type="submit" onClick={this.handleSubmitAdmin}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Sign Up</Link></button>
+                                <Button className="allbtn btn1" type="submit" onClick={this.handleLogIn}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Log In</Link></Button>
+                                <Button className="allbtn" type="submit" onClick={this.handleLogOut}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Log Out</Link></Button>
+                            </div>
+                        </div>
+                        <div className="box2">
+                            <h6 className="heading-style">User</h6>
+                            <div className="sub-box2">
+                                <i className="fa fa-users fa-4x" aria-hidden="true" style={{paddingBottom: "5%"}}></i>
+                                <br/>
+                                <div className="p-2">
+                                    <label className="label1"> Name: </label><br/>
+                                    <input className="input1" type="text" name="fullname" placeholder="Enter name" onChange={this.handleInputChange} required/>
+                                </div> 
+                                <div className="p-2">
+                                    <label className="label1"> Aadhar Number: </label><br/>
+                                    <input className="input1" type="number" name ="aadhar" placeholder="Enter Aadhar Number" onChange={this.handleInputChange} required/>
+                                </div>
+                                <div className="p-2">
+                                    <label className="label1"> Children Aadhar: </label><br/>
+                                    <input className="input1" type="text" name ="children" placeholder="Enter Address" onChange={this.handleInputChange} required/>
+                                </div>
+                                <button className="signup-btn btn btn-block btn-sm btn-primary text-uppercase pl-3 pr-3" type="submit" onClick={this.handleSubmitUser}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Sign Up</Link></button>
+                                <Button className="allbtn btn1" type="submit" onClick={this.handleLogIn}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Log In</Link></Button>
+                                <Button className="allbtn" type="submit" onClick={this.handleLogOut}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Log Out</Link></Button>
+                            </div>
+                        </div>
+                    </div>
+            </React.Fragment>
+        )
+    }
+}
+
+export default SignUp;

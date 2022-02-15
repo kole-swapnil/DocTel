@@ -7,6 +7,7 @@ import Header from "./HeaderComponent";
 import Footer from "./FooterComponent";
 import Home from "./HomeComponent";
 import PatientComp from "./PatientComponent";
+import SignUp from "./SignupComponent";
 
 class Main extends Component {
     constructor(props) {
@@ -50,6 +51,7 @@ class Main extends Component {
                     <Switch>
                         <Route exact path="/home" component={() => <Home contract={this.state.contract} accounts={this.state.accounts} />}/>
                         <Route exact path="/patient" component={() => <PatientComp contract={this.state.contract} accounts={this.state.accounts} />}/>
+                        <Route exact path="/signup" component={() => <SignUp contract={this.state.contract} accounts={this.state.accounts} />}/>
                         <Redirect to="/home"/>
                     </Switch>
                 <Footer/>
