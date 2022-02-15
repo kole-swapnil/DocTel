@@ -6,6 +6,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import Header from "./HeaderComponent";
 import Footer from "./FooterComponent";
 import Home from "./HomeComponent";
+import PatientComp from "./PatientComponent";
 
 class Main extends Component {
     constructor(props) {
@@ -48,6 +49,7 @@ class Main extends Component {
                 <Header/>
                     <Switch>
                         <Route exact path="/home" component={() => <Home contract={this.state.contract} accounts={this.state.accounts} />}/>
+                        <Route exact path="/patient" component={() => <PatientComp contract={this.state.contract} accounts={this.state.accounts} />}/>
                         <Redirect to="/home"/>
                     </Switch>
                 <Footer/>
