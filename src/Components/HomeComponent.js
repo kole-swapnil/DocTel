@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import '../App.css';
 
-
 function Home(props){
     return(
         <div className="container">

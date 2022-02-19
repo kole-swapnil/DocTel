@@ -50,7 +50,7 @@ class Main extends Component {
                 <Header/>
                     <Switch>
                         <Route exact path="/home" component={() => <Home contract={this.state.contract} accounts={this.state.accounts} />}/>
-                        <Route exact path="/patient" component={() => <PatientComp contract={this.state.contract} accounts={this.state.accounts} />}/>
+                        <Route exact path="/patient" component={() => <PatientComp contract={this.state.contract} accounts={this.state.accounts}/>}/>
                         <Route exact path="/signup" component={() => <SignUp contract={this.state.contract} accounts={this.state.accounts} />}/>
                         <Redirect to="/home"/>
                     </Switch>
