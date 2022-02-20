@@ -13,15 +13,17 @@ class SignUp extends Component{
             role: '',
             adminWallets: [],
             userAddrs: [],
-            children: '',
+            walletAddress: '',
+            location: '',
+            speciality: '',
             validate: <div></div>
         };
-        this.handleSubmitUser = this.handleSubmitUser.bind(this);
+        this.handleSubmitDoctor = this.handleSubmitDoctor.bind(this);
         this.handleSubmitAdmin = this.handleSubmitAdmin.bind(this);
         this.handleSubmitGovt = this.handleSubmitGovt.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.addingAdmin = this.addingAdmin.bind(this);
-        this.addingUser = this.addingUser.bind(this);
+        this.addingDoctor = this.addingDoctor.bind(this);
         this.handleLogIn = this.handleLogIn.bind(this);
         this.handleLogOut = this.handleLogOut.bind(this);
         this.onDismiss = this.onDismiss.bind(this);
@@ -55,10 +57,10 @@ class SignUp extends Component{
         }
     }
 
-    async handleSubmitUser(event){
+    async handleSubmitDoctor(event){
         event.preventDefault();
         if (this.handleValidateUser(this.state.aadhar)) {
-            this.addingUser();
+            this.addingDoctor();
         }
         else {
             let validate = 
@@ -81,15 +83,15 @@ class SignUp extends Component{
 
     addingAdmin = async() => {
         console.log(this.state.aadhar,this.state.role);
-        const res = await this.props.contract.methods.addAdmin(this.state.aadhar,this.state.role).send({from: this.props.accounts, gas: 1000000});
+        //const res = await this.props.contract.methods.addAdmin(this.state.aadhar,this.state.role).send({from: this.props.accounts, gas: 1000000});
     }
 
-    addingUser = async() => {
-        console.log(this.state.aadhar);
-        let children = this.state.children.split(',');
-        let childrenAadhar = children.map(el => Number(el));
-        console.log("children",childrenAadhar)
-        const res = await this.props.contract.methods.addPerson(this.state.aadhar, childrenAadhar).send({from: this.props.accounts, gas: 1000000});
+    addingDoctor = async() => {
+        console.log(this.state.aadhar, this.state.walletAddress, this.state.speciality, this.state.location);
+        //let children = this.state.children.split(',');
+        //let childrenAadhar = children.map(el => Number(el));
+        //console.log("children",childrenAadhar)
+        //const res = await this.props.contract.methods.addPerson(this.state.aadhar, childrenAadhar).send({from: this.props.accounts, gas: 1000000});
     }
     
     handleLogIn = async(event) => {
@@ -136,26 +138,26 @@ class SignUp extends Component{
     } 
     onDismiss = () => this.setState({validate: <div></div>});
     async componentDidMount() {
-        var resAdminCount = await this.props.contract?.methods.adminCount().call();
-        var responseAdminsWallets= [];
-        for(var i=1;i<=resAdminCount;i++){
-            var resAdmin = await this.props.contract?.methods.AdminIds(i).call();
-            responseAdminsWallets.push(resAdmin);
-        }   
-        var resPersonCount = await this.props.contract?.methods.personCount().call();
-        var responsePersons= [];
-        for(var i=1;i<=resPersonCount;i++){
-            var resPerson = await this.props.contract?.methods.personIds(i).call();
-            responsePersons.push(resPerson);
-        }
-        let personAddrs = responsePersons.map((ele) => {
-            return ele.perAadharno;
-        })
-        this.setState({
-            adminWallets: responseAdminsWallets,
-            userAddrs: personAddrs
-        })
-        console.log(this.state.adminWallets, this.state.userAddrs);
+        // var resAdminCount = await this.props.contract?.methods.adminCount().call();
+        // var responseAdminsWallets= [];
+        // for(var i=1;i<=resAdminCount;i++){
+        //     var resAdmin = await this.props.contract?.methods.AdminIds(i).call();
+        //     responseAdminsWallets.push(resAdmin);
+        // }   
+        // var resPersonCount = await this.props.contract?.methods.personCount().call();
+        // var responsePersons= [];
+        // for(var i=1;i<=resPersonCount;i++){
+        //     var resPerson = await this.props.contract?.methods.personIds(i).call();
+        //     responsePersons.push(resPerson);
+        // }
+        // let personAddrs = responsePersons.map((ele) => {
+        //     return ele.perAadharno;
+        // })
+        // this.setState({
+        //     adminWallets: responseAdminsWallets,
+        //     userAddrs: personAddrs
+        // })
+        // console.log(this.state.adminWallets, this.state.userAddrs);
     }
 
     render(){
@@ -171,12 +173,6 @@ class SignUp extends Component{
                             <div className="sub-box1">
                                 <i className="fa fa-user-circle-o fa-4x" aria-hidden="true" style={{paddingBottom: "5%"}}></i>
                                 <br/>
-
-                                <div className="p-2">
-                                    <label className="label1"> Name: </label><br/>
-                                    <input className="input1" type="text" name="fullname" placeholder="Enter name" onChange={this.handleInputChange} required/>
-                                </div> 
-
                                 <div className="p-2">
                                     <label className="label1"> Aadhar Number: </label><br/>
                                     <input className="input1" type="number" name="aadhar" placeholder="Enter Aadhar Number" onChange={this.handleInputChange} required/>
@@ -192,23 +188,27 @@ class SignUp extends Component{
                             </div>
                         </div>
                         <div className="box2">
-                            <h6 className="heading-style">User</h6>
+                            <h6 className="heading-style">Doctor</h6>
                             <div className="sub-box2">
                                 <i className="fa fa-users fa-4x" aria-hidden="true" style={{paddingBottom: "5%"}}></i>
                                 <br/>
                                 <div className="p-2">
-                                    <label className="label1"> Name: </label><br/>
-                                    <input className="input1" type="text" name="fullname" placeholder="Enter name" onChange={this.handleInputChange} required/>
+                                    <label className="label1">Wallet Address: </label><br/>
+                                    <input className="input1" type="text" name="walletAddress" placeholder="Enter walletAddress" onChange={this.handleInputChange} required/>
                                 </div> 
                                 <div className="p-2">
                                     <label className="label1"> Aadhar Number: </label><br/>
                                     <input className="input1" type="number" name ="aadhar" placeholder="Enter Aadhar Number" onChange={this.handleInputChange} required/>
                                 </div>
                                 <div className="p-2">
-                                    <label className="label1"> Children Aadhar: </label><br/>
-                                    <input className="input1" type="text" name ="children" placeholder="Enter Address" onChange={this.handleInputChange} required/>
-                                </div>
-                                <button className="signup-btn btn btn-block btn-sm btn-primary text-uppercase pl-3 pr-3" type="submit" onClick={this.handleSubmitUser}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Sign Up</Link></button>
+                                    <label className="label1"> Speciality: </label><br/>
+                                    <input className="input1" type="text" name="speciality" placeholder="Enter Speciality" onChange={this.handleInputChange} required/>
+                                </div> 
+                                <div className="p-2">
+                                    <label className="label1"> Location: </label><br/>
+                                    <input className="input1" type="text" name="location" placeholder="Enter Location" onChange={this.handleInputChange} required/>
+                                </div> 
+                                <button className="signup-btn btn btn-block btn-sm btn-primary text-uppercase pl-3 pr-3" type="submit" onClick={this.handleSubmitDoctor}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Sign Up</Link></button>
                                 <Button className="allbtn btn1" type="submit" onClick={this.handleLogIn}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Log In</Link></Button>
                                 <Button className="allbtn" type="submit" onClick={this.handleLogOut}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Log Out</Link></Button>
                             </div>

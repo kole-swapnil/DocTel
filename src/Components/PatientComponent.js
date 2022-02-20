@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { Breadcrumb, BreadcrumbItem, Button, Form, FormGroup, Label, Input, Col } from 'reactstrap';
-import { BrowserRouter, NavLink } from 'react-router-dom';
+import { Button, Form, FormGroup, Label, Input, Col } from 'reactstrap';
 import '../App.css';
-import { render } from 'react-dom';
 
 class PatientComp extends Component{
     constructor(props){
@@ -14,11 +12,11 @@ class PatientComp extends Component{
                     bloodtype : 0,
                     dob : 0,
                     location : ''
-
                 };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
-    
+        this.Gender = this.Gender.bind(this);
+        this.Bloodtype = this.Bloodtype.bind(this);
     }
     
     handleInputChange(event){
@@ -31,12 +29,28 @@ class PatientComp extends Component{
     }
 
     async handleSubmit(event){
-        console.log("Current State",this.state.patAadhar,this.state.weight,this.state.height,this.state.gender,this.state.dob,this.state.bloodtype,this.state.location);
         event.preventDefault();
-        //TODO: mapping gender & bloodtype
+        this.setState({ gender: this.Gender(this.state.gender)});
+        this.setState({ bloodtype: this.Bloodtype(this.state.bloodtype)});
+        console.log("Current State",this.state.patAadhar,this.state.weight,this.state.height,this.state.gender,this.state.dob,this.state.bloodtype,this.state.location);
         //const res = await this.props.contract.methods.callpatient(this.state.patAadhar,this.state.weight,this.state.height,this.state.gender,this.state.dob,this.state.bloodtype,this.state.location).send({from: this.props.accounts[0],gas : 1000000});
         //console.log(res);
-    
+    }
+
+    Gender(genInput) {
+        switch(genInput) {
+            case 'Male' : return 0;
+            case 'Female' : return 1; 
+        }
+    }
+
+    Bloodtype(bloodInput) {
+        switch(bloodInput) {
+            case 'A' : return 0;
+            case 'B' : return 1;
+            case 'AB' : return 2;
+            case 'O' : return 3;
+        }
     }
 
     render(){
@@ -85,7 +99,7 @@ class PatientComp extends Component{
                                 </Col>
                             </FormGroup>
                             <FormGroup row>
-                                <Label htmlFor="dob" md={2}>dob</Label>
+                                <Label htmlFor="dob" md={2}>Date of Birth</Label>
                                 <Col md={10}>
                                     <Input type="number" id="dob" name="dob" placeholder="dob" value={this.state.dob} onChange={this.handleInputChange}/>
                                 </Col>
@@ -106,7 +120,7 @@ class PatientComp extends Component{
                         </Form>
                 </div>
        
-        )
+            )
         }        
 }
 
