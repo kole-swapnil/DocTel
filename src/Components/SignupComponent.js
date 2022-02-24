@@ -12,7 +12,7 @@ class SignUp extends Component{
             aadhar: 0, 
             role: '',
             adminWallets: [],
-            userAddrs: [],
+            docAadhars: [],
             walletAddress: '',
             location: '',
             speciality: '',
@@ -20,7 +20,6 @@ class SignUp extends Component{
         };
         this.handleSubmitDoctor = this.handleSubmitDoctor.bind(this);
         this.handleSubmitAdmin = this.handleSubmitAdmin.bind(this);
-        this.handleSubmitGovt = this.handleSubmitGovt.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.addingAdmin = this.addingAdmin.bind(this);
         this.addingDoctor = this.addingDoctor.bind(this);
@@ -59,7 +58,7 @@ class SignUp extends Component{
 
     async handleSubmitDoctor(event){
         event.preventDefault();
-        if (this.handleValidateUser(this.state.aadhar)) {
+        if (this.handleValidateDoctor(this.state.aadhar)) {
             this.addingDoctor();
         }
         else {
@@ -74,29 +73,24 @@ class SignUp extends Component{
             })   
         }
     }
-    async handleSubmitGovt(event){
-        event.preventDefault();
-         if(this.props.accounts == '0xC0EC435ad729B545d645bA3A83C74872D585e282'){
-       
-        }
-    }
 
     addingAdmin = async() => {
         console.log(this.state.aadhar,this.state.role);
-        //const res = await this.props.contract.methods.addAdmin(this.state.aadhar,this.state.role).send({from: this.props.accounts, gas: 1000000});
+        const res = await this.props.contract.methods
+                    .addAdmin(this.state.aadhar, this.props.accounts,this.state.role)
+                    .send({from: this.props.accounts, gas: 1000000});
     }
 
     addingDoctor = async() => {
         console.log(this.state.aadhar, this.state.walletAddress, this.state.speciality, this.state.location);
-        //let children = this.state.children.split(',');
-        //let childrenAadhar = children.map(el => Number(el));
-        //console.log("children",childrenAadhar)
-        //const res = await this.props.contract.methods.addPerson(this.state.aadhar, childrenAadhar).send({from: this.props.accounts, gas: 1000000});
+        const res = await this.props.contract.methods
+                    .addDoctor(this.state.aadhar, this.state.walletAddress, this.state.speciality, this.state.location)
+                    .send({from: this.props.accounts, gas: 1000000});
     }
     
     handleLogIn = async(event) => {
         event.preventDefault();
-        if ((!this.handleValidateUser(this.state.aadhar) || this.handleValidateAdmin(this.state.aadhar))) {
+        if ((!this.handleValidateDoctor(this.state.aadhar) || this.handleValidateAdmin(this.state.aadhar))) {
             localStorage.setItem('myAadhar', this.state.aadhar);
             this.props.changeAadhar(localStorage.getItem('myAadhar'));
         }
@@ -128,8 +122,8 @@ class SignUp extends Component{
         }
     } 
 
-    handleValidateUser = (aadhar) => {
-        if(this.state.userAddrs.includes(aadhar.toString())) {
+    handleValidateDoctor = (aadhar) => {
+        if(this.state.docAadhars.includes(aadhar.toString())) {
             return false;
         }
         else {
@@ -137,27 +131,28 @@ class SignUp extends Component{
         }
     } 
     onDismiss = () => this.setState({validate: <div></div>});
+    
     async componentDidMount() {
-        // var resAdminCount = await this.props.contract?.methods.adminCount().call();
-        // var responseAdminsWallets= [];
-        // for(var i=1;i<=resAdminCount;i++){
-        //     var resAdmin = await this.props.contract?.methods.AdminIds(i).call();
-        //     responseAdminsWallets.push(resAdmin);
-        // }   
-        // var resPersonCount = await this.props.contract?.methods.personCount().call();
-        // var responsePersons= [];
-        // for(var i=1;i<=resPersonCount;i++){
-        //     var resPerson = await this.props.contract?.methods.personIds(i).call();
-        //     responsePersons.push(resPerson);
-        // }
-        // let personAddrs = responsePersons.map((ele) => {
-        //     return ele.perAadharno;
-        // })
-        // this.setState({
-        //     adminWallets: responseAdminsWallets,
-        //     userAddrs: personAddrs
-        // })
-        // console.log(this.state.adminWallets, this.state.userAddrs);
+        var resAdminCount = await this.props.contract?.methods.adminCount().call();
+        var responseAdminsWallets= [];
+        for(var i=1;i<=resAdminCount;i++){
+            var resAdmin = await this.props.contract?.methods.AdminIds(i).call();
+            responseAdminsWallets.push(resAdmin);
+        }   
+        var resDoctorCount = await this.props.contract?.methods.doctorCount().call();
+        var responseDoctors= [];
+        for(var i=1;i<=resDoctorCount;i++){
+            var resDoctor = await this.props.contract?.methods.doctorIds(i).call();
+            responseDoctors.push(resDoctor);
+        }
+        let doctorAads = responseDoctors.map((ele) => {
+            return ele.doctorAadhar;
+        })
+        this.setState({
+            adminWallets: responseAdminsWallets,
+            docAadhars: doctorAads
+        })
+        console.log(this.state.adminWallets, this.state.docAadhars);
     }
 
     render(){

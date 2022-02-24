@@ -33,8 +33,11 @@ class PatientComp extends Component{
         this.setState({ gender: this.Gender(this.state.gender)});
         this.setState({ bloodtype: this.Bloodtype(this.state.bloodtype)});
         console.log("Current State",this.state.patAadhar,this.state.weight,this.state.height,this.state.gender,this.state.dob,this.state.bloodtype,this.state.location);
-        //const res = await this.props.contract.methods.callpatient(this.state.patAadhar,this.state.weight,this.state.height,this.state.gender,this.state.dob,this.state.bloodtype,this.state.location).send({from: this.props.accounts[0],gas : 1000000});
-        //console.log(res);
+        const res = await this.props.contract.methods
+                    .addPatient(this.state.patAadhar,this.state.weight,this.state.height,this.state.gender,this.state.dob,this.state.bloodtype,this.state.location)
+                    .send({from: this.props.accounts,gas : 1000000});
+        console.log(res);
+
     }
 
     Gender(genInput) {

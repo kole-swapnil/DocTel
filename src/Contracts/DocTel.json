@@ -2,97 +2,170 @@
     "contractName": "DocTel",
     "abi": [
       {
-        "anonymous": false,
         "inputs": [
           {
-            "indexed": true,
-            "internalType": "address",
-            "name": "docaddr",
-            "type": "address"
-          }
-        ],
-        "name": "docadded",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
             "internalType": "uint256",
-            "name": "treatid",
+            "name": "_adminAadhar",
             "type": "uint256"
           },
           {
-            "indexed": true,
             "internalType": "address",
-            "name": "doc",
-            "type": "address"
-          }
-        ],
-        "name": "notifydoc",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "pataddr",
-            "type": "address"
-          }
-        ],
-        "name": "patadded",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "address",
-            "name": "patent",
+            "name": "_adminAddr",
             "type": "address"
           },
           {
-            "indexed": false,
-            "internalType": "uint8",
-            "name": "stat",
-            "type": "uint8"
+            "internalType": "string",
+            "name": "_role",
+            "type": "string"
           }
         ],
-        "name": "patstate",
-        "type": "event"
+        "name": "addAdmin",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
       },
       {
-        "anonymous": false,
         "inputs": [
           {
-            "indexed": true,
             "internalType": "uint256",
-            "name": "treataddr",
+            "name": "_doctorAadhar",
             "type": "uint256"
           },
           {
-            "indexed": true,
             "internalType": "address",
-            "name": "doc",
+            "name": "_doctorAddress",
             "type": "address"
           },
           {
-            "indexed": true,
+            "internalType": "string",
+            "name": "_speciality",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_location",
+            "type": "string"
+          }
+        ],
+        "name": "addDoctor",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_patientAadhar",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_weight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_height",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_gender",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_dob",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_bloodType",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_location",
+            "type": "string"
+          }
+        ],
+        "name": "addPatient",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "adminAadhars",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "admin_Id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "adminAadhar",
+            "type": "uint256"
+          },
+          {
             "internalType": "address",
-            "name": "pataddr",
+            "name": "adminAddr",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "role",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
             "type": "address"
           }
         ],
-        "name": "treatadded",
-        "type": "event"
+        "name": "adminAddrs",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "admin_Id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "adminAadhar",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "adminAddr",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "role",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
       },
       {
         "inputs": [],
-        "name": "doccount",
+        "name": "adminCount",
         "outputs": [
           {
             "internalType": "uint256",
@@ -101,98 +174,196 @@
           }
         ],
         "stateMutability": "view",
-        "type": "function",
-        "constant": true
+        "type": "function"
       },
       {
         "inputs": [
           {
-            "internalType": "address",
+            "internalType": "uint256",
             "name": "",
-            "type": "address"
+            "type": "uint256"
           }
         ],
-        "name": "docs",
+        "name": "adminIds",
         "outputs": [
           {
             "internalType": "uint256",
-            "name": "doctor_id",
+            "name": "admin_Id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "adminAadhar",
             "type": "uint256"
           },
           {
             "internalType": "address",
-            "name": "docadd",
+            "name": "adminAddr",
             "type": "address"
           },
           {
+            "internalType": "string",
+            "name": "role",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
             "internalType": "uint256",
-            "name": "age",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "doctorAadhars",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "doctor_Id",
             "type": "uint256"
           },
           {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
+            "internalType": "uint256",
+            "name": "doctorAadhar",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "doctorAddress",
+            "type": "address"
           },
           {
             "internalType": "string",
             "name": "speciality",
             "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "location",
+            "type": "string"
           }
         ],
         "stateMutability": "view",
-        "type": "function",
-        "constant": true
+        "type": "function"
       },
       {
         "inputs": [
           {
-            "internalType": "uint256",
+            "internalType": "address",
             "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "doctorAddrs",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "doctor_Id",
             "type": "uint256"
-          }
-        ],
-        "name": "docsId",
-        "outputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "name": "pat",
-        "outputs": [
+          },
           {
             "internalType": "uint256",
-            "name": "patient_id",
+            "name": "doctorAadhar",
             "type": "uint256"
           },
           {
             "internalType": "address",
-            "name": "patient_acc",
+            "name": "doctorAddress",
             "type": "address"
           },
           {
             "internalType": "string",
-            "name": "allergies",
+            "name": "speciality",
             "type": "string"
           },
           {
             "internalType": "string",
+            "name": "location",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "doctorCount",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "doctorIds",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "doctor_Id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "doctorAadhar",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "doctorAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "speciality",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "location",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "patientAadhars",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "patient_Id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "patientAadhar",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "weight",
-            "type": "string"
+            "type": "uint256"
           },
           {
             "internalType": "uint256",
@@ -200,58 +371,32 @@
             "type": "uint256"
           },
           {
-            "internalType": "string",
-            "name": "gender",
-            "type": "string"
-          },
-          {
             "internalType": "uint256",
-            "name": "age",
+            "name": "gender",
             "type": "uint256"
           },
           {
-            "internalType": "string",
-            "name": "bloodtype",
-            "type": "string"
+            "internalType": "uint256",
+            "name": "dob",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bloodType",
+            "type": "uint256"
           },
           {
             "internalType": "string",
             "name": "location",
             "type": "string"
-          },
-          {
-            "internalType": "enum Medico.State",
-            "name": "patient_state",
-            "type": "uint8"
           }
         ],
         "stateMutability": "view",
-        "type": "function",
-        "constant": true
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "name": "patId",
-        "outputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true
+        "type": "function"
       },
       {
         "inputs": [],
-        "name": "patientcount",
+        "name": "patientCount",
         "outputs": [
           {
             "internalType": "uint256",
@@ -260,8 +405,7 @@
           }
         ],
         "stateMutability": "view",
-        "type": "function",
-        "constant": true
+        "type": "function"
       },
       {
         "inputs": [
@@ -271,57 +415,51 @@
             "type": "uint256"
           }
         ],
-        "name": "treat",
+        "name": "patientIds",
         "outputs": [
           {
             "internalType": "uint256",
-            "name": "treatment_id",
+            "name": "patient_Id",
             "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "doctor_add",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "patient_add",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "symptoms",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "medications",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "procedure",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "description",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "prescription",
-            "type": "string"
           },
           {
             "internalType": "uint256",
-            "name": "dateofComp",
+            "name": "patientAadhar",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "weight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "height",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "gender",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "dob",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bloodType",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "location",
+            "type": "string"
           }
         ],
         "stateMutability": "view",
-        "type": "function",
-        "constant": true
+        "type": "function"
       },
       {
         "inputs": [],
@@ -334,348 +472,14 @@
           }
         ],
         "stateMutability": "view",
-        "type": "function",
-        "constant": true
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_account",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "_allergies",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_weight",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_height",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "_gender",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_age",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "_bloodtype",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_location",
-            "type": "string"
-          }
-        ],
-        "name": "callpatient",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_account",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "_allergies",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_weight",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_height",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "_gender",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_age",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "_bloodtype",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_location",
-            "type": "string"
-          }
-        ],
-        "name": "addpatient",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_account",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "_allergies",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_weight",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_height",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_age",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "_location",
-            "type": "string"
-          }
-        ],
-        "name": "modpatient",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "_treatid",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "_docaccount",
-            "type": "address"
-          }
-        ],
-        "name": "setDoc",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "_age",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "_name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_speciality",
-            "type": "string"
-          }
-        ],
-        "name": "calldoctor",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_account",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_age",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "_name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_speciality",
-            "type": "string"
-          }
-        ],
-        "name": "addDoctor",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_account",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_age",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "_name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_speciality",
-            "type": "string"
-          }
-        ],
-        "name": "modDoctor",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_account",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "_symptoms",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_medications",
-            "type": "string"
-          }
-        ],
-        "name": "addTreatment",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "_treatid",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "_procedure",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_description",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_prescription",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_status",
-            "type": "uint256"
-          }
-        ],
-        "name": "dotreatment",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_account",
-            "type": "address"
-          }
-        ],
-        "name": "gettreatgone",
-        "outputs": [
-          {
-            "internalType": "uint256[]",
-            "name": "",
-            "type": "uint256[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_docaccount",
-            "type": "address"
-          }
-        ],
-        "name": "gettreatdone",
-        "outputs": [
-          {
-            "internalType": "uint256[]",
-            "name": "",
-            "type": "uint256[]"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true
       }
     ],
     "networks": {
         "3": {
           "events": {},
           "links": {},
-          "address": "0x5c254425639E91498c0E163Df6A78a6e953a3953",
+          "address": "0x57B43746DcDAa5463ea4C9BB2334dfeadEf75A83",
           "transactionHash": "0xaf4692ca66de6055d5cd14f0857294319a396065a69f9102538ec8794dbc1b4a"
         }
     }
