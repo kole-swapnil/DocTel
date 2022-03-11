@@ -19,7 +19,7 @@ class Header extends Component{
         return(
             <React.Fragment>
                 <Navbar dark expand="md">
-                    <div className="container">
+                    <div className="container justify-center">
                         <NavbarToggler onClick={this.togglenav}/>
                         <NavbarBrand className="mr-auto">DAPP EMR</NavbarBrand>
                         <Collapse isOpen = {this.state.isNavOpen} navbar>
@@ -46,6 +46,8 @@ class Header extends Component{
                                     <NavLink className="nav-link" to="/patdata">Patient Data</NavLink>
                                 </NavItem>
                             </Nav>
+                            <p className='right-align' style={{float: 'right', color: 'white'}}>{localStorage.getItem('myAadhar') != 0? `Logged in: ${localStorage.getItem('myAadhar')}`:'Not Logged in'}<br/>   
+                            <small>{localStorage.getItem('wallet') != 0? `Wallet: ${localStorage.getItem('wallet')}`:'Not Connected'}</small></p>  
                         </Collapse>
                     </div>
                 </Navbar>

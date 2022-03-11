@@ -41,6 +41,7 @@ contract DocTel{
     struct Treatment {
         uint treatment_Id;
         uint adminAadhar;
+        uint patientAadhar;
         uint[] doctorAadhar;
         string[] prescription;
         string[] reports;
@@ -56,6 +57,8 @@ contract DocTel{
     mapping(uint=>Admin) public adminIds;
     mapping(uint=>Admin) public adminAadhars;
     mapping(address=>Admin) public adminAddrs;
+
+    mapping(uint => Treatment) public treatments;
 
     function addPatient(uint _patientAadhar, uint _weight, uint _height, uint _gender, uint _dob, uint _bloodType, string calldata _location) public {
         bool isExisting = (patientAadhars[_patientAadhar].patient_Id != 0);
@@ -138,4 +141,14 @@ contract DocTel{
             adminAddrs[_adminAddr] = adm;    
         }    
     }
+
+    function addTreatment ( uint _adminAadhar, uint _patientAadhar) public {
+        treatmentCount++;
+        Treatment memory aux;
+        aux.treatment_Id = treatmentCount;
+        aux.patientAadhar = _patientAadhar;
+        aux.adminAadhar = _adminAadhar;
+        treatments[treatmentCount] = aux;
+    }
+
 }

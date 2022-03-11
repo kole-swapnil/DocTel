@@ -8,6 +8,7 @@ import Footer from "./FooterComponent";
 import Home from "./HomeComponent";
 import PatientComp from "./PatientComponent";
 import SignUp from "./SignupComponent";
+import TreatmentComp from "./TreatmentComponent";
 
 class Main extends Component {
     constructor(props) {
@@ -18,6 +19,7 @@ class Main extends Component {
             balance: 0,
             contract: null
         }
+        this.changeAadhar = this.changeAadhar.bind(this);
     }
 
     componentDidMount = async () => {
@@ -44,6 +46,11 @@ class Main extends Component {
         }
     }
 
+    changeAadhar = async(aad) => {
+        this.setState({aadhar: aad});
+        console.log(aad);
+    }
+
     render () {
         return (
             <div className="App">
@@ -51,7 +58,8 @@ class Main extends Component {
                     <Switch>
                         <Route exact path="/home" component={() => <Home contract={this.state.contract} accounts={this.state.accounts} />}/>
                         <Route exact path="/patient" component={() => <PatientComp contract={this.state.contract} accounts={this.state.accounts}/>}/>
-                        <Route exact path="/signup" component={() => <SignUp contract={this.state.contract} accounts={this.state.accounts} />}/>
+                        <Route exact path="/signup" component={() => <SignUp contract={this.state.contract} accounts={this.state.accounts} changeAadhar={this.changeAadhar}/>}/>
+                        <Route exact path="/treatment" component={() => <TreatmentComp contract={this.state.contract} accounts={this.state.accounts}/>}/>
                         <Redirect to="/home"/>
                     </Switch>
                 <Footer/>
