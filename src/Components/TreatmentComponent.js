@@ -36,7 +36,7 @@ class TreatmentComp extends Component{
     async handleSubmitadd(event){
         console.log("Current State" + JSON.stringify(this.state));
         event.preventDefault();
-        //const res = await this.props.contract.methods.addTreatment(this.state.patAadhar,localStorage.getItem('myAadhar')).send({from: this.props.accounts,gas : 1000000});
+        const res = await this.props.contract.methods.addTreatment(localStorage.getItem('myAadhar'), this.state.patAadhar).send({from: this.props.accounts,gas : 1000000});
         const treatcount = await this.props.contract.methods.treatmentCount().call();
         this.setState({
              treatcount : treatcount

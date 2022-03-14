@@ -136,7 +136,7 @@ class SignUp extends Component{
         var resAdminCount = await this.props.contract?.methods.adminCount().call();
         var responseAdminsWallets= [];
         for(var i=1;i<=resAdminCount;i++){
-            var resAdmin = await this.props.contract?.methods.AdminIds(i).call();
+            var resAdmin = await this.props.contract?.methods.adminIds(i).call();
             responseAdminsWallets.push(resAdmin);
         }   
         var resDoctorCount = await this.props.contract?.methods.doctorCount().call();
