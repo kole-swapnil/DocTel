@@ -30,11 +30,11 @@ class PatientComp extends Component{
 
     async handleSubmit(event){
         event.preventDefault();
-        this.setState({ gender: this.Gender(this.state.gender)});
-        this.setState({ bloodtype: this.Bloodtype(this.state.bloodtype)});
-        console.log("Current State",this.state.patAadhar,this.state.weight,this.state.height,this.state.gender,this.state.dob,this.state.bloodtype,this.state.location);
+        let genderLocal = this.Gender(this.state.gender);
+        let bloodtypeLocal = this.Bloodtype(this.state.bloodtype);
+        console.log("Current State",this.state.patAadhar,this.state.weight,this.state.height,genderLocal,this.state.dob,bloodtypeLocal,this.state.location);
         const res = await this.props.contract.methods
-                    .addPatient(this.state.patAadhar,this.state.weight,this.state.height,this.state.gender,this.state.dob,this.state.bloodtype,this.state.location)
+                    .addPatient(this.state.patAadhar,this.state.weight,this.state.height,genderLocal,this.state.dob,bloodtypeLocal,this.state.location)
                     .send({from: this.props.accounts,gas : 1000000});
         console.log(res);
 
