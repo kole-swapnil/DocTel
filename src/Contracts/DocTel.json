@@ -56,6 +56,24 @@
         "inputs": [
           {
             "internalType": "uint256",
+            "name": "_treatment_Id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_doctorAadhar",
+            "type": "uint256"
+          }
+        ],
+        "name": "addDoctorToTreatment",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
             "name": "_patientAadhar",
             "type": "uint256"
           },
@@ -91,6 +109,60 @@
           }
         ],
         "name": "addPatient",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_treatment_Id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_prescription",
+            "type": "string"
+          }
+        ],
+        "name": "addPrescriptionTreat",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_treatment_Id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_report",
+            "type": "string"
+          }
+        ],
+        "name": "addReportTreat",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_adminAadhar",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_patientAadhar",
+            "type": "uint256"
+          }
+        ],
+        "name": "addTreatment",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -344,6 +416,25 @@
         "inputs": [
           {
             "internalType": "uint256",
+            "name": "_patientAadhar",
+            "type": "uint256"
+          }
+        ],
+        "name": "getTreatmentGone",
+        "outputs": [
+          {
+            "internalType": "uint256[]",
+            "name": "",
+            "type": "uint256[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
             "name": "",
             "type": "uint256"
           }
@@ -473,6 +564,35 @@
         ],
         "stateMutability": "view",
         "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "treatments",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "treatment_Id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "adminAadhar",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "patientAadhar",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
       }
     ],
     "networks": {
@@ -485,7 +605,7 @@
         "5777": {
           "events": {},
           "links": {},
-          "address": "0x5D171385A4a0f646512E43e769597Ad8fAd2bF5D",
+          "address": "0x2814c88F5e01B74D5904f868Ac1bd85301BF18c5",
           "transactionHash": "0xaf4692ca66de6055d5cd14f0857294319a396065a69f9102538ec8794dbc1b4a"
         }
     }

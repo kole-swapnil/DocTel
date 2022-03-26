@@ -42,7 +42,7 @@ contract DocTel{
         uint treatment_Id;
         uint adminAadhar;
         uint patientAadhar;
-        uint[] doctorAadhar;
+        uint[] doctorAadhars;
         string[] prescription;
         string[] reports;
     }
@@ -149,6 +149,24 @@ contract DocTel{
         aux.patientAadhar = _patientAadhar;
         aux.adminAadhar = _adminAadhar;
         treatments[treatmentCount] = aux;
+        patientAadhars[_patientAadhar].gonetreatment.push(treatmentCount);
+
+    }
+
+    function addDoctorToTreatment (uint _treatment_Id, uint _doctorAadhar) public {
+        treatments[_treatment_Id].doctorAadhars.push(_doctorAadhar);
+    }
+
+    function addPrescriptionTreat (uint _treatment_Id, string memory _prescription) public {
+        treatments[_treatment_Id].prescription.push(_prescription);
+    }
+
+    function addReportTreat (uint _treatment_Id, string memory _report) public {
+        treatments[_treatment_Id].reports.push(_report);
+    }
+
+    function getTreatmentGone(uint _patientAadhar)public view returns (uint[] memory){
+        return patientAadhars[_patientAadhar].gonetreatment;
     }
 
 }
