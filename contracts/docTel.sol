@@ -60,6 +60,12 @@ contract DocTel{
 
     mapping(uint => Treatment) public treatments;
 
+    event treatAdded(uint indexed treatId, uint indexed patAadhar, uint indexed adminAadhar, uint times);
+    event doctorAddedTreat(uint indexed treatId, uint indexed docAadhar,  uint times);
+    event PrescriptionAddedTreat(uint indexed treatId, string prescription,  uint times);
+    event ReportAddedTreat(uint indexed treatId, string report,  uint times);
+
+
     function addPatient(uint _patientAadhar, uint _weight, uint _height, uint _gender, uint _dob, uint _bloodType, string calldata _location) public {
         bool isExisting = (patientAadhars[_patientAadhar].patient_Id != 0);
         if (!isExisting) {                    //add
@@ -150,23 +156,39 @@ contract DocTel{
         aux.adminAadhar = _adminAadhar;
         treatments[treatmentCount] = aux;
         patientAadhars[_patientAadhar].gonetreatment.push(treatmentCount);
+        emit treatAdded(treatmentCount, _patientAadhar, _adminAadhar, block.timestamp);
 
     }
 
     function addDoctorToTreatment (uint _treatment_Id, uint _doctorAadhar) public {
         treatments[_treatment_Id].doctorAadhars.push(_doctorAadhar);
+        emit doctorAddedTreat(_treatment_Id, _doctorAadhar, block.timestamp);
     }
 
     function addPrescriptionTreat (uint _treatment_Id, string memory _prescription) public {
         treatments[_treatment_Id].prescription.push(_prescription);
+        emit PrescriptionAddedTreat(_treatment_Id, _prescription, block.timestamp);
     }
 
     function addReportTreat (uint _treatment_Id, string memory _report) public {
         treatments[_treatment_Id].reports.push(_report);
+        emit ReportAddedTreat(_treatment_Id, _report, block.timestamp);
     }
 
     function getTreatmentGone(uint _patientAadhar)public view returns (uint[] memory){
         return patientAadhars[_patientAadhar].gonetreatment;
+    }
+
+    function getdocTreatmentGone(uint _treatment_Id)public view returns (uint[] memory){
+        return treatments[_treatment_Id].doctorAadhars;
+    }
+
+    function getPrescriptionTreat(uint _treatment_Id)public view returns (string[] memory){
+        return treatments[_treatment_Id].prescription;
+    }
+
+    function getReportTreat(uint _treatment_Id)public view returns (string[] memory){
+        return treatments[_treatment_Id].reports;
     }
 
 }
