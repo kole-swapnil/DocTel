@@ -12,6 +12,10 @@ import TreatmentComp from "./TreatmentComponent";
 import AllMemComponent from "./AllMemComponent";
 import PatientDetailsComp from "./PatientDetailsComponent";
 import AllTreatmentComponent from "./AllTreatmentComponent";
+import TreatmentHistoryComp from "./TreatmentHistoryComponent";
+const ipfsClient = require('ipfs-http-client');
+const ipfs = ipfsClient.create({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' })
+
 
 class Main extends Component {
     constructor(props) {
@@ -20,7 +24,11 @@ class Main extends Component {
             web3: null,
             accounts: null,
             balance: 0,
-            contract: null
+            contract: null,
+            treatAddedEvents : [],
+            doctorAddedTreatEvents: [],
+            PrescriptionAddedTreatEvents: [],
+            ReportAddedTreatEvents:[],
         }
         this.changeAadhar = this.changeAadhar.bind(this);
     }
@@ -43,6 +51,23 @@ class Main extends Component {
                 balance: balance 
             });
             localStorage.setItem("wallet", accounts[0]);
+
+            var treatAddedEvents = [];
+            var res = await this.state.contract.getPastEvents('treatAdded', {fromBlock: 0});
+            treatAddedEvents = res;
+            res = await this.state.contract.getPastEvents('doctorAddedTreat', {fromBlock: 0});
+            var doctorAddedTreatEvents = res;
+            res = await this.state.contract.getPastEvents('PrescriptionAddedTreat', {fromBlock: 0});
+            var PrescriptionAddedTreatEvents = res;
+            res = await this.state.contract.getPastEvents('ReportAddedTreat', {fromBlock: 0});
+            var ReportAddedTreatEvents = res;
+            this.setState({
+              treatAddedEvents, 
+              doctorAddedTreatEvents, 
+              PrescriptionAddedTreatEvents, 
+              ReportAddedTreatEvents
+            });
+
         }
         catch (error) {
 
@@ -55,6 +80,29 @@ class Main extends Component {
     }
 
     render () {
+
+        const CardWithId = ({ match }) => {
+            return (
+              <TreatmentHistoryComp
+                contract={this.state.contract} 
+                accounts={this.state.accounts} 
+                matchId={match.params.id}
+                treatAdded={this.state.treatAddedEvents?.filter(
+                    (token) => token.returnValues.treatId === match.params.id
+                )}
+                doctorAddedTreat={this.state.doctorAddedTreatEvents?.filter(
+                    (token) => token.returnValues.treatId === match.params.id
+                )}
+                PrescriptionAddedTreat={this.state.PrescriptionAddedTreatEvents?.filter(
+                    (token) => token.returnValues.treatId === match.params.id
+                )}
+                ReportAddedTreat={this.state.ReportAddedTreatEvents?.filter(
+                    (token) => token.returnValues.treatId === match.params.id
+                )}
+              />
+            );
+        };
+
         return (
             <div className="App">
                 <Header/>
@@ -62,10 +110,11 @@ class Main extends Component {
                         <Route exact path="/home" component={() => <Home contract={this.state.contract} accounts={this.state.accounts} />}/>
                         <Route exact path="/patient" component={() => <PatientComp contract={this.state.contract} accounts={this.state.accounts}/>}/>
                         <Route exact path="/signup" component={() => <SignUp contract={this.state.contract} accounts={this.state.accounts} changeAadhar={this.changeAadhar}/>}/>
-                        <Route exact path="/treatment" component={() => <TreatmentComp contract={this.state.contract} accounts={this.state.accounts}/>}/>
+                        <Route exact path="/treatment" component={() => <TreatmentComp contract={this.state.contract} accounts={this.state.accounts} ipfs = {ipfs}/>}/>
                         <Route exact path="/members" component={() => <AllMemComponent contract={this.state.contract} accounts={this.state.accounts}/>}/>
                         <Route exact path="/patdata" component={() => <PatientDetailsComp contract={this.state.contract} accounts={this.state.accounts}/>}/>
                         <Route exact path="/treat" component={() => <AllTreatmentComponent contract={this.state.contract} accounts={this.state.accounts}/>}/>
+                        <Route path='/treatment/:id' component={CardWithId} />
                         <Redirect to="/home"/>
                     </Switch>
                 <Footer/>

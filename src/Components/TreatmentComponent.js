@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Breadcrumb, BreadcrumbItem, Button, Form, FormGroup, Label, Input, Col, FormFeedback } from 'reactstrap';
 import '../App.css';
 import { render } from 'react-dom';
+const ipfsClient = require('ipfs-http-client')
+const ipfs = ipfsClient.create({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' })
 
 class TreatmentComp extends Component{
     constructor(props){
@@ -14,7 +16,9 @@ class TreatmentComp extends Component{
                     description : '',
                     prescription : '',
                     treatId : 0,
+                    loading: '',
                     patstate : 'Active',
+                    buffer: null,
                     docaccount : '',
                     docAadhar: 0
                 };
@@ -22,6 +26,8 @@ class TreatmentComp extends Component{
         this.handleSubmitmod = this.handleSubmitmod.bind(this);
         this.handleSubmitsenddoc = this.handleSubmitsenddoc.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.uploadImage = this.uploadImage.bind(this);
+        this.captureFile = this.captureFile.bind(this)
     
     }
     
@@ -34,6 +40,53 @@ class TreatmentComp extends Component{
         })
     }
 
+    uploadImage = (x) => {
+        console.log("Submitting file to ipfs...")
+        //adding file to the IPFS
+        //console.log(this.state.buffer);
+        ipfs.add(this.state.buffer, (error, result) => {
+            console.log('Ipfs result', result)
+            if(error) {
+                console.log("error");
+                console.error(error);
+                return
+            }
+            console.log("complete")
+            this.setState({ loading: true });
+            if (x == 1){
+                const res = this.props.contract.methods.addPrescriptionTreat(
+                    this.state.treatId,
+                    result[0].hash
+                )
+                .send({ from: this.props.accounts, gas: 1000000 }).on('transactionHash', (hash) => {
+                    this.setState({ loading: false })
+                })
+            }
+            else if (x == 2) {
+                const res = this.props.contract.methods.addReportTreat(
+                    this.state.treatId,
+                    result[0].hash
+                )
+                .send({ from: this.props.accounts, gas: 1000000 }).on('transactionHash', (hash) => {
+                    this.setState({ loading: false })
+                })
+            }
+
+
+           
+        })
+    }
+
+    captureFile = event => {
+        event.preventDefault()
+        const file = event.target.files[0]
+        const reader = new window.FileReader()
+        reader.readAsArrayBuffer(file)
+        reader.onloadend = () => {
+          this.setState({ buffer: Buffer(reader.result) })
+          console.log('buffer', this.state.buffer)
+        }
+    }
     async handleSubmitadd(event){
         console.log("Current State" + JSON.stringify(this.state));
         event.preventDefault();
@@ -42,9 +95,7 @@ class TreatmentComp extends Component{
         this.setState({
              treatcount : treatcount
          })
-         console.log(this.state.treatcount);
-
-        
+         console.log(this.state.treatcount);        
     }
     async handleSubmitsenddoc(event){
         event.preventDefault();
@@ -121,49 +172,53 @@ class TreatmentComp extends Component{
                         </Form>
                         <br/>
                         <br/>
-                        <h2>Do Treatment</h2>
-                        <Form onSubmit={this.handleSubmitmod}>
+                        <h2>Add Prescription and Report</h2>
+                        <Form>
                             <FormGroup row>
                                 <Label htmlFor="treatId" md={2}>Treatment Id</Label>
                                 <Col md={10}>
-                                    <Input type="tel" id="treatId" name="treatId" placeholder="Treatment Id" value={this.state.treatId} onChange={this.handleInputChange}/>
+                                    <Input type="number" id="treatId" name="treatId" placeholder="Treatment Id" value={this.state.treatId} onChange={this.handleInputChange}/>
                                 </Col>
                             </FormGroup>
                             <FormGroup row>
-                                <Label htmlFor="patstate" md={2}>Patient State</Label>
-                                <Col md={4}>
-                                    <Input type="select" name="patstate" value={this.state.patstate} onChange={this.handleInputChange}>
-                                    <option>Active</option>
-                                    <option>Recovered</option>
-                                    <option>Deceased</option>
-                                    </Input>
-                                </Col>
-                            </FormGroup>
-                            
-                            <FormGroup row>
-                                <Label htmlFor="procedure" md={2}>Procedure</Label>
-                                <Col md={10}>
-                                    <Input type="text" id="procedure" name="procedure" placeholder="Procedure" value={this.state.procedure} onChange={this.handleInputChange}/>
-                                </Col>
+                                <Label htmlFor='prescriptionUpload' className='ml-3'>
+                                Prescription Upload
+                                </Label>
+                                <Input type='file' accept=".jpg, .jpeg, .png, .bmp, .gif" name = "prescriptionUpload" onChange={this.captureFile} />
                             </FormGroup>
                             <FormGroup row>
-                                <Label htmlFor="description" md={2}>Description</Label>
-                                <Col md={10}>
-                                    <Input type="text" id="description" name="description" placeholder="Description" value={this.state.description} onChange={this.handleInputChange} />    
-                                </Col>
-                            </FormGroup>
-                            <FormGroup row>
-                                <Label htmlFor="prescription" md={2}>Prescription</Label>
-                                <Col md={10}>
-                                    <Input type="text" id="prescription" name="prescription" placeholder="Prescription" value={this.state.prescription} onChange={this.handleInputChange} />    
-                                </Col>
-                            </FormGroup>
-                            <FormGroup row>
-                                <Col md={{size:10, offset:2}}>
-                                    <Button type="submit" color="primary">
-                                        Do Treatment
+                                <div>
+                                    <Button
+                                        color='primary'
+                                        onClick={() => {this.uploadImage(1)}}
+                                    >
+                                        Add
                                     </Button>
+                                </div>
+                            </FormGroup>
+                        </Form>
+                        <Form>
+                            <FormGroup row>
+                                <Label htmlFor="treatId" md={2}>Treatment Id</Label>
+                                <Col md={10}>
+                                    <Input type="number" id="treatId" name="treatId" placeholder="Treatment Id" value={this.state.treatId} onChange={this.handleInputChange}/>
                                 </Col>
+                            </FormGroup>
+                            <FormGroup row>
+                                <Label htmlFor='reportUpload' className='ml-3'>
+                                Report Upload
+                                </Label>
+                                <Input type='file' accept=".jpg, .jpeg, .png, .bmp, .gif" name = "reportUpload" onChange={this.captureFile} />
+                            </FormGroup>
+                            <FormGroup row>
+                                <div>
+                                    <Button
+                                        color='primary'
+                                        onClick={() => {this.uploadImage(2)}}
+                                    >
+                                        Add
+                                    </Button>
+                                </div>
                             </FormGroup>
                         </Form>
                         

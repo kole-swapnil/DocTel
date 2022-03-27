@@ -3,20 +3,23 @@ import { Breadcrumb, BreadcrumbItem, Button, Form, FormGroup, Label, Input, Col,
 import { BrowserRouter, NavLink } from 'react-router-dom';
 
 import { render } from 'react-dom';
+import { Link } from 'react-router-dom/cjs/react-router-dom.min';
 var mst;
 var alldocs = [];
 function Allpatrender({treatment}){
     // var xy = treatment.dateofComp;
     // var yz = xy != 0?"bg-success text-white":""; 
-    
+
     return(
-        <Card >
-        <i className="fa fa-medkit fa-5x"></i>
-        <CardBody>
-        <CardTitle>Treatment ID : {treatment.treatment_Id}</CardTitle>
-        <CardText><small>Patient Aadhar : {treatment.patientAadhar}</small></CardText>
-        <CardText><small>Admin Aadhar : {treatment.adminAadhar}</small></CardText>
-        </CardBody>
+        <Card>
+            <Link to={`/treatment/${treatment.treatment_Id}`}>
+                <i className="fa fa-medkit fa-5x"></i>
+                <CardBody>
+                <CardTitle>Treatment ID : {treatment.treatment_Id}</CardTitle>
+                <CardText><small>Patient Aadhar : {treatment.patientAadhar}</small></CardText>
+                <CardText><small>Admin Aadhar : {treatment.adminAadhar}</small></CardText>
+                </CardBody>
+            </Link>
       </Card>
     )
     }
