@@ -11,6 +11,7 @@ import SignUp from "./SignupComponent";
 import TreatmentComp from "./TreatmentComponent";
 import AllMemComponent from "./AllMemComponent";
 import PatientDetailsComp from "./PatientDetailsComponent";
+import AllTreatmentComponent from "./AllTreatmentComponent";
 
 class Main extends Component {
     constructor(props) {
@@ -64,6 +65,7 @@ class Main extends Component {
                         <Route exact path="/treatment" component={() => <TreatmentComp contract={this.state.contract} accounts={this.state.accounts}/>}/>
                         <Route exact path="/members" component={() => <AllMemComponent contract={this.state.contract} accounts={this.state.accounts}/>}/>
                         <Route exact path="/patdata" component={() => <PatientDetailsComp contract={this.state.contract} accounts={this.state.accounts}/>}/>
+                        <Route exact path="/treat" component={() => <AllTreatmentComponent contract={this.state.contract} accounts={this.state.accounts}/>}/>
                         <Redirect to="/home"/>
                     </Switch>
                 <Footer/>

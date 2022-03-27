@@ -15,7 +15,8 @@ class TreatmentComp extends Component{
                     prescription : '',
                     treatId : 0,
                     patstate : 'Active',
-                    docaccount : ''
+                    docaccount : '',
+                    docAadhar: 0
                 };
         this.handleSubmitadd = this.handleSubmitadd.bind(this);
         this.handleSubmitmod = this.handleSubmitmod.bind(this);
@@ -47,11 +48,9 @@ class TreatmentComp extends Component{
     }
     async handleSubmitsenddoc(event){
         event.preventDefault();
-     
-
-        const res = await this.props.contract.methods.setDoc(this.state.treatId,this.state.docaccount).send({from: this.props.accounts[0],gas : 1000000});
+        const res = await this.props.contract.methods.addDoctorToTreatment(this.state.treatId,this.state.docAadhar).send({from: this.props.accounts,gas : 1000000});
         console.log(res);
-        }
+    }
 
     async handleSubmitmod(event){
         event.preventDefault();
@@ -89,6 +88,33 @@ class TreatmentComp extends Component{
                                 <Col md={{size:2}}>
                                 <Button color="success">{this.state.treatcount}</Button>
                                 </Col>
+                            </FormGroup>
+
+                            
+                        </Form>
+                        <br/>
+                        <br/>
+                        <h2>Add Doctor</h2>
+                        <Form onSubmit={this.handleSubmitsenddoc}>
+                        <FormGroup row>
+                                <Label htmlFor="treatId" md={2}>Treatment Id</Label>
+                                <Col md={10}>
+                                    <Input type="number" id="treatId" name="treatId" placeholder="Treatment Id" value={this.state.treatId} onChange={this.handleInputChange}/>
+                                </Col>
+                            </FormGroup>
+                            <FormGroup row>
+                                <Label htmlFor="docAadhar" md={2}>Doctor Account</Label>
+                                <Col md={10}>
+                                    <Input type="number" id="docAadhar" name="docAadhar" placeholder="Doctor Aadhar" value={this.state.docAadhar} onChange={this.handleInputChange}/>
+                                </Col>
+                            </FormGroup>
+                            <FormGroup row>
+                                <Col md={{size:10, offset:2}}>
+                                    <Button type="submit" color="primary">
+                                        Send Treatment
+                                    </Button>
+                                </Col>
+                                
                             </FormGroup>
 
                             
@@ -140,33 +166,7 @@ class TreatmentComp extends Component{
                                 </Col>
                             </FormGroup>
                         </Form>
-                        <br/>
-                        <br/>
-                        <h2>Send Treatment</h2>
-                        <Form onSubmit={this.handleSubmitsenddoc}>
-                        <FormGroup row>
-                                <Label htmlFor="treatId" md={2}>Treatment Id</Label>
-                                <Col md={10}>
-                                    <Input type="tel" id="treatId" name="treatId" placeholder="Treatment Id" value={this.state.treatId} onChange={this.handleInputChange}/>
-                                </Col>
-                            </FormGroup>
-                            <FormGroup row>
-                                <Label htmlFor="docaccount" md={2}>Doctor Account</Label>
-                                <Col md={10}>
-                                    <Input type="text" id="docaccount" name="docaccount" placeholder="Doctor Account Address" value={this.state.docaccount} onChange={this.handleInputChange}/>
-                                </Col>
-                            </FormGroup>
-                            <FormGroup row>
-                                <Col md={{size:10, offset:2}}>
-                                    <Button type="submit" color="primary">
-                                        Send Treatment
-                                    </Button>
-                                </Col>
-                                
-                            </FormGroup>
-
-                            
-                        </Form>
+                        
                         <br/>
                         <br/>
                         <br/>

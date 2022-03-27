@@ -57,12 +57,13 @@ class PatientDetailsComp extends Component {
         console.log("Current State" + JSON.stringify(this.state));
         event.preventDefault();
         const res = await this.props.contract.methods.patientAadhars(this.state.patAadhar).call();
-        // var arr = '';
-        // res.map(ms => {
-        //     arr = arr.concat(ms,',')
-        // })
+        var mst = await this.props.contract.methods.getTreatmentGone(this.state.patAadhar).call();
+        var arr = '';
+        mst.map(ms => {
+            arr = arr.concat(ms,',')
+        })
 
-        //console.log("fdsaf",arr);
+        console.log("fdsaf",arr);
         let bloodtypeLocal = this.Bloodtype(res.bloodType);
         let genderLocal = this.Gender(res.gender);
         this.setState({
@@ -74,7 +75,7 @@ class PatientDetailsComp extends Component {
             age: res.age,
             location: res.location,
             patient_state: res.patient_state,
-            //treatmentsgone: arr
+            treatmentsgone: arr
 
         });
         console.log("Current State" + JSON.stringify(this.state));
@@ -114,7 +115,7 @@ class PatientDetailsComp extends Component {
                         <CardText><small>Bloodtype : {this.state.bloodtype}</small></CardText>
                         <CardText><small>Gender : {this.state.gender}</small></CardText>
                         <CardText><small>Location : {this.state.location}</small></CardText>
-                        <CardText><small >treatments Undergone : {this.state.treatmentsgone}</small></CardText>
+                        <CardText><small >Treatments Undergone : {this.state.treatmentsgone}</small></CardText>
                     </CardBody>
                 </Card>
                 <br />
