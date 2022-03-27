@@ -53,10 +53,12 @@ class TreatmentComp extends Component{
             }
             console.log("complete")
             this.setState({ loading: true });
+        }).then((response) => {
+            console.log(response.path);
             if (x == 1){
                 const res = this.props.contract.methods.addPrescriptionTreat(
                     this.state.treatId,
-                    result[0].hash
+                    response.path
                 )
                 .send({ from: this.props.accounts, gas: 1000000 }).on('transactionHash', (hash) => {
                     this.setState({ loading: false })
@@ -65,15 +67,13 @@ class TreatmentComp extends Component{
             else if (x == 2) {
                 const res = this.props.contract.methods.addReportTreat(
                     this.state.treatId,
-                    result[0].hash
+                    response.path
                 )
                 .send({ from: this.props.accounts, gas: 1000000 }).on('transactionHash', (hash) => {
                     this.setState({ loading: false })
                 })
             }
 
-
-           
         })
     }
 
@@ -154,7 +154,7 @@ class TreatmentComp extends Component{
                                 </Col>
                             </FormGroup>
                             <FormGroup row>
-                                <Label htmlFor="docAadhar" md={2}>Doctor Account</Label>
+                                <Label htmlFor="docAadhar" md={2}>Doctor Aadhar</Label>
                                 <Col md={10}>
                                     <Input type="number" id="docAadhar" name="docAadhar" placeholder="Doctor Aadhar" value={this.state.docAadhar} onChange={this.handleInputChange}/>
                                 </Col>
