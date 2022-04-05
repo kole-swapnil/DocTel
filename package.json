@@ -1,6 +1,5 @@
 {
-  "homepage": "https://kole-swapnil.github.io/DocTel/",
-  "name": "doctel",
+  "name": "client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
