@@ -41,29 +41,54 @@ class AllTreatmentComponent extends Component{
         })
     }
 
+    handleValidateAadhar = () => {
+        if (this.state.patAadhar.length > 10) {
+            this.setState({validateText: "Aadhar no. should be less than 10 characters"}) ;
+        }
+        else if (this.state.patAadhar.length < 10) {
+            this.setState({validateText: "Aadhar no. should be more than 10 characters"}) ;
+        } 
+        else if (! new RegExp('^[0-9]*$').test(this.state.patAadhar)){
+            this.setState({validateText: "Aadhar no. should be only digits"}) ;
+        }
+        else {
+            this.setState({validateText: ""}) ;
+            return "ok"
+        };
+    }
+    
     async handleSubmit(event) {
         console.log("Current State" + JSON.stringify(this.state));
         event.preventDefault();
-       // const res = await this.props.contract.methods.patientAadhars(this.state.patAadhar).call();
-        var mst = await this.props.contract.methods.getTreatmentGone(this.state.patAadhar).call();
-        console.log("mst", mst);
-        var arr = [];
-        mst.map(ms => {
-            arr.push(Number(ms))
-        })
+        if (this.handleValidateAadhar() === "ok") {
+            const res = await this.props.contract.methods.patientAadhars(this.state.patAadhar).call();
+            if (res.patient_Id == "0") {
+                this.setState({validateText: "Patient doesn't exists"}) ;
+                this.setState({validate: true});
+            }
+            var mst = await this.props.contract.methods.getTreatmentGone(this.state.patAadhar).call();
+            console.log("mst", mst);
+            var arr = [];
+            mst.map(ms => {
+                arr.push(Number(ms))
+            })
 
-        console.log("fdsaf",arr);
-        var response2= [];
-        for(var i=0;i<arr.length;i++){
-            var rex = await this.props.contract?.methods.treatments(arr[i]).call();
-            response2.push(rex);
+            console.log("fdsaf",arr);
+            var response2= [];
+            for(var i=0;i<arr.length;i++){
+                var rex = await this.props.contract?.methods.treatments(arr[i]).call();
+                response2.push(rex);
+            }
+                    // alldocs = [];
+                    // alldocs = response.filter((resp) => resp.doctor_add == this.props.accounts[0])
+            console.log(response2);
+            this.setState({ treatments : response2});
+            console.log("Current State" + JSON.stringify(this.state));
+            // console.log(res);
         }
-                // alldocs = [];
-                // alldocs = response.filter((resp) => resp.doctor_add == this.props.accounts[0])
-        console.log(response2);
-        this.setState({ treatments : response2});
-        console.log("Current State" + JSON.stringify(this.state));
-        // console.log(res);
+        else {
+            this.setState({validate: true});
+        }
 
     }
 
@@ -93,7 +118,7 @@ class AllTreatmentComponent extends Component{
         })
         return(
         <div className="container">
-            <h2>Patient Details</h2>
+            <h2>Treatment Details</h2>
                 <Form onSubmit={this.handleSubmit}>
                     <FormGroup row>
                         <Label htmlFor="patAadhar" md={2}>Patient Aadhar</Label>
@@ -101,6 +126,7 @@ class AllTreatmentComponent extends Component{
                             <Input type="text" id="patAadhar" name="patAadhar" placeholder="Patient Aadhar No." value={this.state.patAadhar} onChange={this.handleInputChange} />
                         </Col>
                     </FormGroup>
+                    {this.state.validate === true ? <p style={{"color":"red"}}>{this.state.validateText}</p> : <></>}
                     <FormGroup row>
                         <Col md={{ size: 12}}>
                             <Button type="submit" color="primary">

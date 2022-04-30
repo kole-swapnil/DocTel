@@ -17,6 +17,8 @@ class PatientDetailsComp extends Component {
             age: '',
             location: '',
             treatmentsgone: '',
+            validate: false,
+            validateText: ''
         };
         this.Bloodtype = this.Bloodtype.bind(this);
         this.Gender = this.Gender.bind(this);
@@ -44,6 +46,22 @@ class PatientDetailsComp extends Component {
         }
     }
 
+    handleValidateAadhar = () => {
+        if (this.state.patAadhar.length > 10) {
+            this.setState({validateText: "Aadhar no. should be less than 10 characters"}) ;
+        }
+        else if (this.state.patAadhar.length < 10) {
+            this.setState({validateText: "Aadhar no. should be more than 10 characters"}) ;
+        } 
+        else if (! new RegExp('^[0-9]*$').test(this.state.patAadhar)){
+            this.setState({validateText: "Aadhar no. should be only digits"}) ;
+        }
+        else {
+            this.setState({validateText: ""}) ;
+            return "ok"
+        };
+    }
+
     handleInputChange(event) {
         const target = event.target;
         const value = target.value;
@@ -56,7 +74,12 @@ class PatientDetailsComp extends Component {
     async handleSubmit(event) {
         console.log("Current State" + JSON.stringify(this.state));
         event.preventDefault();
-        const res = await this.props.contract.methods.patientAadhars(this.state.patAadhar).call();
+        if (this.handleValidateAadhar() === "ok") {
+            const res = await this.props.contract.methods.patientAadhars(this.state.patAadhar).call();
+            if (res.patient_Id == "0") {
+                this.setState({validateText: "Patient doesn't exists"}) ;
+                this.setState({validate: true});
+            }
         var mst = await this.props.contract.methods.getTreatmentGone(this.state.patAadhar).call();
         var arr = '';
         mst.map(ms => {
@@ -80,6 +103,10 @@ class PatientDetailsComp extends Component {
         });
         console.log("Current State" + JSON.stringify(this.state));
         // console.log(res);
+        }
+        else {
+            this.setState({validate: true});
+        }
 
     }
 
@@ -95,6 +122,7 @@ class PatientDetailsComp extends Component {
                             <Input type="text" id="patAadhar" name="patAadhar" placeholder="Patient Aadhar No." value={this.state.patAadhar} onChange={this.handleInputChange} />
                         </Col>
                     </FormGroup>
+                    {this.state.validate === true ? <p style={{"color":"red"}}>{this.state.validateText}</p> : <></>}
                     <FormGroup row>
                         <Col md={{ size: 12}}>
                             <Button type="submit" color="primary">
