@@ -48,10 +48,10 @@ class PatientDetailsComp extends Component {
 
     handleValidateAadhar = () => {
         if (this.state.patAadhar.length > 10) {
-            this.setState({validateText: "Aadhar no. should be less than 10 characters"}) ;
+            this.setState({validateText: "Aadhar no. should be less than 10 digits"}) ;
         }
         else if (this.state.patAadhar.length < 10) {
-            this.setState({validateText: "Aadhar no. should be more than 10 characters"}) ;
+            this.setState({validateText: "Aadhar no. should be more than 10 digits"}) ;
         } 
         else if (! new RegExp('^[0-9]*$').test(this.state.patAadhar)){
             this.setState({validateText: "Aadhar no. should be only digits"}) ;

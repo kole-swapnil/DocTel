@@ -30,14 +30,42 @@ class PatientComp extends Component{
 
     async handleSubmit(event){
         event.preventDefault();
-        let genderLocal = this.Gender(this.state.gender);
-        let bloodtypeLocal = this.Bloodtype(this.state.bloodtype);
-        console.log("Current State",this.state.patAadhar,this.state.weight,this.state.height,genderLocal,this.state.dob,bloodtypeLocal,this.state.location);
-        const res = await this.props.contract.methods
-                    .addPatient(this.state.patAadhar,this.state.weight,this.state.height,genderLocal,this.state.dob,bloodtypeLocal,this.state.location)
-                    .send({from: this.props.accounts,gas : 1000000});
-        console.log(res);
+        if (this.handleValidateAll() === "ok") {
+            let genderLocal = this.Gender(this.state.gender);
+            let bloodtypeLocal = this.Bloodtype(this.state.bloodtype);
+            let dobNew = +new Date(this.state.dob);
+            console.log("Current State",this.state.patAadhar,this.state.weight,this.state.height,genderLocal,dobNew/1000,bloodtypeLocal,this.state.location);
+            const res = await this.props.contract.methods
+                        .addPatient(this.state.patAadhar,this.state.weight,this.state.height,genderLocal,this.state.dob,bloodtypeLocal,this.state.location)
+                        .send({from: this.props.accounts,gas : 1000000});
+            console.log(res);
+        }
+        else {
+            this.setState({validate: true});
+        }
 
+    }
+
+    handleValidateAll = () => {
+        if (this.state.patAadhar.length > 10) {
+            this.setState({validateText: "Aadhar no. should be less than 10 digits"}) ;
+        }
+        else if (this.state.patAadhar.length < 10) {
+            this.setState({validateText: "Aadhar no. should be more than 10 digits"}) ;
+        } 
+        else if (! new RegExp('^[0-9]*$').test(this.state.patAadhar)){
+            this.setState({validateText: "Aadhar no. should be only digits"}) ;
+        }
+        else if (this.state.weight > 500000) {
+            this.setState({validateText: "Weight cannot be more than 500 kgs"}) ;
+        } 
+        else if (this.state.height > 300) {
+            this.setState({validateText: "Height cannot be more than 300 cms"}) ;
+        } 
+        else {
+            this.setState({validateText: ""}) ;
+            return "ok"
+        };
     }
 
     Gender(genInput) {
@@ -104,7 +132,7 @@ class PatientComp extends Component{
                             <FormGroup row>
                                 <Label htmlFor="dob" md={2}>Date of Birth</Label>
                                 <Col md={10}>
-                                    <Input type="number" id="dob" name="dob" placeholder="dob" value={this.state.dob} onChange={this.handleInputChange}/>
+                                    <Input type="datetime-local" id="dob" name="dob" placeholder="dob" value={this.state.dob} onChange={this.handleInputChange}/>
                                 </Col>
                             </FormGroup>
                             <FormGroup row>
@@ -113,6 +141,7 @@ class PatientComp extends Component{
                                     <Input type="text" id="location" name="location" placeholder="Location" value={this.state.location} onChange={this.handleInputChange} />    
                                 </Col>
                             </FormGroup>
+                            {this.state.validate === true ? <p style={{"color":"red"}}>{this.state.validateText}</p> : <></>}
                             <FormGroup row>
                                 <Col md={{size:10, offset:2}}>
                                     <Button type="submit" color="primary">
