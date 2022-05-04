@@ -65,8 +65,22 @@ contract DocTel{
     event PrescriptionAddedTreat(uint indexed treatId, string prescription,  uint times);
     event ReportAddedTreat(uint indexed treatId, string report,  uint times);
 
+    modifier onlyAdmin() {
+        require(adminAddrs[msg.sender].adminAddr != address(0x0),"Not Admin");
+        _;
+    }
 
-    function addPatient(uint _patientAadhar, uint _weight, uint _height, uint _gender, uint _dob, uint _bloodType, string calldata _location) public {
+    modifier onlyDoctor() {
+        require(doctorAddrs[msg.sender].doctorAddress != address(0x0),"Not Admin");
+        _;
+    }
+
+    modifier onlyAdminDoctor() {
+        require((adminAddrs[msg.sender].adminAddr != address(0x0)) || (doctorAddrs[msg.sender].doctorAddress != address(0x0)),"Not Admin");
+        _;
+    }
+
+    function addPatient(uint _patientAadhar, uint _weight, uint _height, uint _gender, uint _dob, uint _bloodType, string calldata _location) onlyAdminDoctor public {
         bool isExisting = (patientAadhars[_patientAadhar].patient_Id != 0);
         if (!isExisting) {                    //add
             patientCount++;
@@ -96,7 +110,7 @@ contract DocTel{
         }
     }
 
-    function addDoctor (uint _doctorAadhar, address _doctorAddress, string calldata _speciality, string calldata _location) public {
+    function addDoctor (uint _doctorAadhar, address _doctorAddress, string calldata _speciality, string calldata _location) public onlyAdmin{
         bool isExisting = (doctorAadhars[_doctorAadhar].doctor_Id != 0);
         if (!isExisting) {
             doctorCount++;
@@ -148,7 +162,7 @@ contract DocTel{
         }    
     }
 
-    function addTreatment ( uint _adminAadhar, uint _patientAadhar) public {
+    function addTreatment ( uint _adminAadhar, uint _patientAadhar) public onlyAdminDoctor{
         treatmentCount++;
         Treatment memory aux;
         aux.treatment_Id = treatmentCount;
@@ -160,17 +174,17 @@ contract DocTel{
 
     }
 
-    function addDoctorToTreatment (uint _treatment_Id, uint _doctorAadhar) public {
+    function addDoctorToTreatment (uint _treatment_Id, uint _doctorAadhar) public onlyAdminDoctor{
         treatments[_treatment_Id].doctorAadhars.push(_doctorAadhar);
         emit doctorAddedTreat(_treatment_Id, _doctorAadhar, block.timestamp);
     }
 
-    function addPrescriptionTreat (uint _treatment_Id, string memory _prescription) public {
+    function addPrescriptionTreat (uint _treatment_Id, string memory _prescription) public onlyAdminDoctor{
         treatments[_treatment_Id].prescription.push(_prescription);
         emit PrescriptionAddedTreat(_treatment_Id, _prescription, block.timestamp);
     }
 
-    function addReportTreat (uint _treatment_Id, string memory _report) public {
+    function addReportTreat (uint _treatment_Id, string memory _report) public onlyAdminDoctor{
         treatments[_treatment_Id].reports.push(_report);
         emit ReportAddedTreat(_treatment_Id, _report, block.timestamp);
     }
