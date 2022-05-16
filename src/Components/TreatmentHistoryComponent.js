@@ -16,7 +16,7 @@ function AllEventrender({treatEv, contract, accounts}) {
     return (
         <div className='eventbox'>
             {treatEv?.event === "PrescriptionAddedTreat" || treatEv?.event === "ReportAddedTreat" ?
-                <a href={`https://ipfs.io/ipfs/${treatEv?.returnValues.report || treatEv?.returnValues.prescription}`} target="_blank"><img src={`https://ipfs.io/ipfs/${treatEv?.returnValues.report || treatEv?.returnValues.prescription}`}/></a> : null
+                <a href={`https://ipfs.io/ipfs/${treatEv?.returnValues.report || treatEv?.returnValues.prescription}`} target="_blank"><img style={{'max-width' : '90%'}} src={`https://ipfs.io/ipfs/${treatEv?.returnValues.report || treatEv?.returnValues.prescription}`}/></a> : null
             }
             <h6>Event: {treatEv?.event}</h6>
             <p>{treatEv?.event === "doctorAddedTreat" ? <p>Doctor: {treatEv?.returnValues.docAadhar}</p> : null }</p>
