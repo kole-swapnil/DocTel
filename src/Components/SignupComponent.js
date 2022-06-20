@@ -23,7 +23,8 @@ class SignUp extends Component{
         this.handleInputChange = this.handleInputChange.bind(this);
         this.addingAdmin = this.addingAdmin.bind(this);
         this.addingDoctor = this.addingDoctor.bind(this);
-        this.handleLogIn = this.handleLogIn.bind(this);
+        this.handleLogInAdmin = this.handleLogInAdmin.bind(this);
+        this.handleLogInDoctor = this.handleLogInDoctor.bind(this);
         this.handleLogOut = this.handleLogOut.bind(this);
         this.onDismiss = this.onDismiss.bind(this);
     }
@@ -47,7 +48,7 @@ class SignUp extends Component{
             let validate = 
                 <div key={1}>
                     <Alert color="warning" toggle={this.onDismiss} fade={false}>
-                        Do a login with same wallet. Account already exists
+                        Do a login with different wallet. Account already exists
                     </Alert>
                 </div>;
             this.setState({
@@ -88,9 +89,28 @@ class SignUp extends Component{
                     .send({from: this.props.accounts, gas: 1000000});
     }
     
-    handleLogIn = async(event) => {
+    handleLogInAdmin = async(event) => {
         event.preventDefault();
-        if ((!this.handleValidateDoctor(this.state.aadhar) || this.handleValidateAdmin(this.state.aadhar))) {
+        if (!this.handleValidateAdmin(this.props.accounts)) {
+            localStorage.setItem('myAadhar', this.state.aadhar);
+            this.props.changeAadhar(localStorage.getItem('myAadhar'));
+        }
+        else {
+            let validate = 
+                <div key={1}>
+                    <Alert color="warning" toggle={this.onDismiss} fade={false}>
+                        Account with this Aadhar No. does not exist. Please Signup.
+                    </Alert>
+                </div>;
+            this.setState({
+                validate: validate
+            })   
+        }
+    }
+
+    handleLogInDoctor = async(event) => {
+        event.preventDefault();
+        if (!(this.handleValidateDoctor(this.state.aadhar))) {
             localStorage.setItem('myAadhar', this.state.aadhar);
             this.props.changeAadhar(localStorage.getItem('myAadhar'));
         }
@@ -114,7 +134,7 @@ class SignUp extends Component{
     }   
 
     handleValidateAdmin = (wallet) => {
-        if(this.state.adminWallets.includes(wallet)) {
+        if(this.state.adminWallets.includes(wallet.toString())) {
             return false;
         }
         else {
@@ -145,11 +165,14 @@ class SignUp extends Component{
             var resDoctor = await this.props.contract?.methods.doctorIds(i).call();
             responseDoctors.push(resDoctor);
         }
+        let adWallets = responseAdminsWallets.map((ele) => {
+            return ele.adminAddr;
+        })
         let doctorAads = responseDoctors.map((ele) => {
             return ele.doctorAadhar;
         })
         this.setState({
-            adminWallets: responseAdminsWallets,
+            adminWallets: adWallets,
             docAadhars: doctorAads
         })
         console.log(this.state.adminWallets, this.state.docAadhars);
@@ -178,7 +201,7 @@ class SignUp extends Component{
                                     <input className="input1" type="text" name="role" placeholder="Enter Role" onChange={this.handleInputChange} required/>
                                 </div>
                                 <button className="signup-btn btn btn-block btn-sm btn-primary text-uppercase pl-3 pr-3" type="submit" onClick={this.handleSubmitAdmin}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Sign Up</Link></button>
-                                <Button className="allbtn btn1" type="submit" onClick={this.handleLogIn}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Log In</Link></Button>
+                                <Button className="allbtn btn1" type="submit" onClick={this.handleLogInAdmin}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Log In</Link></Button>
                                 <Button className="allbtn" type="submit" onClick={this.handleLogOut}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Log Out</Link></Button>
                             </div>
                         </div>
@@ -204,7 +227,7 @@ class SignUp extends Component{
                                     <input className="input1" type="text" name="location" placeholder="Enter Location" onChange={this.handleInputChange} required/>
                                 </div> 
                                 <button className="signup-btn btn btn-block btn-sm btn-primary text-uppercase pl-3 pr-3" type="submit" onClick={this.handleSubmitDoctor}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Sign Up</Link></button>
-                                <Button className="allbtn btn1" type="submit" onClick={this.handleLogIn}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Log In</Link></Button>
+                                <Button className="allbtn btn1" type="submit" onClick={this.handleLogInDoctor}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Log In</Link></Button>
                                 <Button className="allbtn" type="submit" onClick={this.handleLogOut}><Link to="/signup" style={{textDecoration: 'none' , color: 'white'}}>Log Out</Link></Button>
                             </div>
                         </div>
