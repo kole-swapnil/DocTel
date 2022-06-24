@@ -31,20 +31,21 @@ class Header extends Component{
                                     <NavLink className="nav-link" to="/signup">Register</NavLink>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink className="nav-link" to="/treatment">Treatment</NavLink>
-                                </NavItem>
-                                <NavItem>
                                     <NavLink className="nav-link" to="/members">Members</NavLink>
                                 </NavItem>
                                 <NavItem>
                                     <NavLink className="nav-link" to="/patient">Patient</NavLink>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink className="nav-link" to="/treat">All Treatment</NavLink>
-                                </NavItem>
-                                <NavItem>
                                     <NavLink className="nav-link" to="/patdata">Patient Data</NavLink>
                                 </NavItem>
+                                <NavItem>
+                                    <NavLink className="nav-link" to="/treatment">Treatment</NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink className="nav-link" to="/treat">All Treatment</NavLink>
+                                </NavItem>
+
                             </Nav>
                             <p className='right-align' style={{float: 'right', color: 'white'}}>{localStorage.getItem('myAadhar') != 0? `Logged in: ${localStorage.getItem('myAadhar')}`:'Not Logged in'}<br/>   
                             <small>{localStorage.getItem('wallet') != 0? `Wallet: ${localStorage.getItem('wallet')}`:'Not Connected'}</small></p>  
