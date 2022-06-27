@@ -35,6 +35,7 @@ class Main extends Component {
 
     componentDidMount = async () => {
         try {
+            console.log("Time start main component",Date.now());
             const web3 = await getWeb3();
             const accounts = await web3.eth.getAccounts();
             const balance = await web3.eth.getBalance(accounts[0]);
@@ -44,6 +45,7 @@ class Main extends Component {
                 BNContract.abi,
                 deployedNetwork && deployedNetwork.address,
             );
+            console.log("Time init state main component",Date.now());
             this.setState({ 
                 web3, 
                 accounts: accounts[0], 
@@ -51,7 +53,7 @@ class Main extends Component {
                 balance: balance 
             });
             localStorage.setItem("wallet", accounts[0]);
-
+            console.log("Time start event get",Date.now());
             var treatAddedEvents = [];
             var res = await this.state.contract.getPastEvents('treatAdded', {fromBlock: 0});
             treatAddedEvents = res;
@@ -61,6 +63,7 @@ class Main extends Component {
             var PrescriptionAddedTreatEvents = res;
             res = await this.state.contract.getPastEvents('ReportAddedTreat', {fromBlock: 0});
             var ReportAddedTreatEvents = res;
+            console.log("Time end event get",Date.now());
             this.setState({
               treatAddedEvents, 
               doctorAddedTreatEvents, 

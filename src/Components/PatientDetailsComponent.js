@@ -75,6 +75,7 @@ class PatientDetailsComp extends Component {
         console.log("Current State" + JSON.stringify(this.state));
         event.preventDefault();
         if (this.handleValidateAadhar() === "ok") {
+            console.log("Time start get patient details", Date.now());
             const res = await this.props.contract.methods.patientAadhars(this.state.patAadhar).call();
             if (res.patient_Id == "0") {
                 this.setState({validateText: "Patient doesn't exists"}) ;
@@ -85,7 +86,7 @@ class PatientDetailsComp extends Component {
         mst.map(ms => {
             arr = arr.concat(ms,',')
         })
-
+        console.log("Time end get patient details", Date.now());
         console.log("fdsaf",arr);
         let bloodtypeLocal = this.Bloodtype(res.bloodType);
         let genderLocal = this.Gender(res.gender);

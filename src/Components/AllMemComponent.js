@@ -51,12 +51,14 @@ class AllMemComponent extends Component{
     }
     
     async componentDidMount() {
+        console.log("Time start members AllMemComponent componentDidMount",Date.now());
         var resDoctorCount = await this.props.contract?.methods.doctorCount().call();
         var responseDoctors= [];
         for(var i=1;i<=resDoctorCount;i++){
             var resDoctor = await this.props.contract?.methods.doctorIds(i).call();
             responseDoctors.push(resDoctor);
         }
+        console.log("Time end doctor AllMemComponent componentDidMount",Date.now());
         this.setState({ 
             doctors : responseDoctors
         });
@@ -66,7 +68,7 @@ class AllMemComponent extends Component{
             var resAdmin = await this.props.contract?.methods.adminIds(i).call();
             responseAdminsAddrs.push(resAdmin);
         }    
-              
+        console.log("Time end admin AllMemComponent componentDidMount",Date.now());
         this.setState({ 
             admins : responseAdminsAddrs
         });          
