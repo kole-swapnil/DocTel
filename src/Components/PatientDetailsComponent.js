@@ -87,7 +87,7 @@ class PatientDetailsComp extends Component {
             arr = arr.concat(ms,',')
         })
         console.log("Time end get patient details", Date.now());
-        console.log("fdsaf",arr);
+        console.log("treatment array",arr);
         let bloodtypeLocal = this.Bloodtype(res.bloodType);
         let genderLocal = this.Gender(res.gender);
         this.setState({
