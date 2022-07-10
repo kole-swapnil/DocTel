@@ -70,6 +70,7 @@ class Main extends Component {
               PrescriptionAddedTreatEvents, 
               ReportAddedTreatEvents
             });
+            console.log("Time end main component",Date.now());
 
         }
         catch (error) {

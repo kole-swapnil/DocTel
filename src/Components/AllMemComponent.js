@@ -62,6 +62,7 @@ class AllMemComponent extends Component{
         this.setState({ 
             doctors : responseDoctors
         });
+        console.log("Time start admin AllMemComponent componentDidMount",Date.now());
         var resAdminCount = await this.props.contract?.methods.adminCount().call();
         var responseAdminsAddrs= [];
         for(var i=1;i<=resAdminCount;i++){

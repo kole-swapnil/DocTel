@@ -59,6 +59,7 @@ class SignUp extends Component{
 
     async handleSubmitDoctor(event){
         event.preventDefault();
+        console.log("Time started DoctorAdd");
         if (this.handleValidateDoctor(this.state.aadhar)) {
             this.addingDoctor();
         }
@@ -76,17 +77,21 @@ class SignUp extends Component{
     }
 
     addingAdmin = async() => {
+        console.log("Time started AdminAdd");
         console.log(this.state.aadhar,this.state.role);
         const res = await this.props.contract.methods
                     .addAdmin(this.state.aadhar, this.props.accounts,this.state.role)
                     .send({from: this.props.accounts, gas: 1000000});
+        console.log("Time ended AdminAdd");
     }
 
     addingDoctor = async() => {
+        console.log("Time started DoctorAdd");
         console.log(this.state.aadhar, this.state.walletAddress, this.state.speciality, this.state.location);
         const res = await this.props.contract.methods
                     .addDoctor(this.state.aadhar, this.state.walletAddress, this.state.speciality, this.state.location)
                     .send({from: this.props.accounts, gas: 1000000});
+        console.log("Time ended DoctorAdd");
     }
     
     handleLogInAdmin = async(event) => {
@@ -153,24 +158,29 @@ class SignUp extends Component{
     onDismiss = () => this.setState({validate: <div></div>});
     
     async componentDidMount() {
+        console.log("Time started AdminFetch");
         var resAdminCount = await this.props.contract?.methods.adminCount().call();
         var responseAdminsWallets= [];
         for(var i=1;i<=resAdminCount;i++){
             var resAdmin = await this.props.contract?.methods.adminIds(i).call();
             responseAdminsWallets.push(resAdmin);
         }   
+        let adWallets = responseAdminsWallets.map((ele) => {
+            return ele.adminAddr;
+        })
+        console.log("Time ended AdminFetch");
+        console.log("Time started DoctorFetch");
         var resDoctorCount = await this.props.contract?.methods.doctorCount().call();
         var responseDoctors= [];
         for(var i=1;i<=resDoctorCount;i++){
             var resDoctor = await this.props.contract?.methods.doctorIds(i).call();
             responseDoctors.push(resDoctor);
         }
-        let adWallets = responseAdminsWallets.map((ele) => {
-            return ele.adminAddr;
-        })
+
         let doctorAads = responseDoctors.map((ele) => {
             return ele.doctorAadhar;
         })
+        console.log("Time ended DoctorFetch");
         this.setState({
             adminWallets: adWallets,
             docAadhars: doctorAads
