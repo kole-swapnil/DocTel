@@ -59,7 +59,7 @@ class SignUp extends Component{
 
     async handleSubmitDoctor(event){
         event.preventDefault();
-        console.log("Time started DoctorAdd");
+        console.log("Time started DoctorAdd", Date.now());
         if (this.handleValidateDoctor(this.state.aadhar)) {
             this.addingDoctor();
         }
@@ -77,21 +77,21 @@ class SignUp extends Component{
     }
 
     addingAdmin = async() => {
-        console.log("Time started AdminAdd");
+        console.log("Time started AdminAdd",Date.now());
         console.log(this.state.aadhar,this.state.role);
         const res = await this.props.contract.methods
                     .addAdmin(this.state.aadhar, this.props.accounts,this.state.role)
                     .send({from: this.props.accounts, gas: 1000000});
-        console.log("Time ended AdminAdd");
+        console.log("Time ended AdminAdd",Date.now());
     }
 
     addingDoctor = async() => {
-        console.log("Time started DoctorAdd");
+        console.log("Time started DoctorAdd", Date.now());
         console.log(this.state.aadhar, this.state.walletAddress, this.state.speciality, this.state.location);
         const res = await this.props.contract.methods
                     .addDoctor(this.state.aadhar, this.state.walletAddress, this.state.speciality, this.state.location)
                     .send({from: this.props.accounts, gas: 1000000});
-        console.log("Time ended DoctorAdd");
+        console.log("Time ended DoctorAdd", Date.now());
     }
     
     handleLogInAdmin = async(event) => {
@@ -158,7 +158,7 @@ class SignUp extends Component{
     onDismiss = () => this.setState({validate: <div></div>});
     
     async componentDidMount() {
-        console.log("Time started AdminFetch");
+        console.log("Time started AdminFetch", Date.now());
         var resAdminCount = await this.props.contract?.methods.adminCount().call();
         var responseAdminsWallets= [];
         for(var i=1;i<=resAdminCount;i++){
@@ -168,8 +168,8 @@ class SignUp extends Component{
         let adWallets = responseAdminsWallets.map((ele) => {
             return ele.adminAddr;
         })
-        console.log("Time ended AdminFetch");
-        console.log("Time started DoctorFetch");
+        console.log("Time ended AdminFetch", Date.now());
+        console.log("Time started DoctorFetch", Date.now());
         var resDoctorCount = await this.props.contract?.methods.doctorCount().call();
         var responseDoctors= [];
         for(var i=1;i<=resDoctorCount;i++){
@@ -180,7 +180,7 @@ class SignUp extends Component{
         let doctorAads = responseDoctors.map((ele) => {
             return ele.doctorAadhar;
         })
-        console.log("Time ended DoctorFetch");
+        console.log("Time ended DoctorFetch", Date.now());
         this.setState({
             adminWallets: adWallets,
             docAadhars: doctorAads

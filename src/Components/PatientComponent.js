@@ -35,10 +35,12 @@ class PatientComp extends Component{
             let bloodtypeLocal = this.Bloodtype(this.state.bloodtype);
             let dobNew = +new Date(this.state.dob);
             console.log("Current State",this.state.patAadhar,this.state.weight,this.state.height,genderLocal,dobNew/1000,bloodtypeLocal,this.state.location);
+            console.log("Time start Add patient", Date.now());
             const res = await this.props.contract.methods
                         .addPatient(this.state.patAadhar,this.state.weight,this.state.height,genderLocal,dobNew/1000,bloodtypeLocal,this.state.location)
                         .send({from: this.props.accounts,gas : 1000000});
             console.log(res);
+            console.log("Time end Add patient", Date.now());
         }
         else {
             this.setState({validate: true});
