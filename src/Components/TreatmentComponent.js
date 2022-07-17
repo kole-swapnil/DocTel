@@ -41,6 +41,7 @@ class TreatmentComp extends Component{
     }
 
     uploadImage = (x) => {
+        console.log("Time start file to ipfs", Date.now())
         console.log("Submitting file to ipfs...")
         //adding file to the IPFS
         //console.log(this.state.buffer);
@@ -62,6 +63,7 @@ class TreatmentComp extends Component{
                 )
                 .send({ from: this.props.accounts, gas: 1000000 }).on('transactionHash', (hash) => {
                     this.setState({ loading: false })
+                    console.log("Time end trans ended", Date.now());
                 })
             }
             else if (x == 2) {
@@ -71,10 +73,12 @@ class TreatmentComp extends Component{
                 )
                 .send({ from: this.props.accounts, gas: 1000000 }).on('transactionHash', (hash) => {
                     this.setState({ loading: false })
+                    console.log("Time end trans ended", Date.now());
                 })
             }
 
         })
+        console.log("Time end file uploaded", Date.now());
     }
 
     captureFile = event => {
@@ -90,18 +94,21 @@ class TreatmentComp extends Component{
     async handleSubmitadd(event){
         console.log("Current State" + JSON.stringify(this.state));
         event.preventDefault();
-        console.log("Time st")
+        console.log("Time start Treatment Add", Date.now());
         const res = await this.props.contract.methods.addTreatment(localStorage.getItem('myAadhar'), this.state.patAadhar).send({from: this.props.accounts,gas : 1000000});
         const treatcount = await this.props.contract.methods.treatmentCount().call();
         this.setState({
              treatcount : treatcount
          })
          console.log(this.state.treatcount);        
+         console.log("Time end Treatment Add", Date.now());
     }
     async handleSubmitsenddoc(event){
         event.preventDefault();
+        console.log("Time start Doctor added to Treatment", Date.now());
         const res = await this.props.contract.methods.addDoctorToTreatment(this.state.treatId,this.state.docAadhar).send({from: this.props.accounts,gas : 1000000});
         console.log(res);
+        console.log("Time end Doctor added to Treatment", Date.now());
     }
 
     async handleSubmitmod(event){
