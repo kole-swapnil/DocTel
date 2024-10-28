@@ -2,7 +2,7 @@ pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;
 
 contract DocTel{
-
+ 
     uint public patientCount = 0;
     uint public doctorCount = 0;
     uint public adminCount = 0;
