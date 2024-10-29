@@ -12,12 +12,10 @@ import {
 } from "reactstrap";
 import "../App.css";
 import { render } from "react-dom";
-const ipfsClient = require("ipfs-http-client");
-const ipfs = ipfsClient.create({
-  host: "ipfs.infura.io",
-  port: 5001,
-  protocol: "https",
-});
+import Axios from 'axios';
+require('dotenv').config();
+const REACT_APP_PINATA_API_KEY = process.env.REACT_APP_PINATA_API_KEY;
+const REACT_APP_PINATA_API_SECRET = process.env.REACT_APP_PINATA_API_SECRET;
 
 class TreatmentComp extends Component {
   constructor(props) {
@@ -54,27 +52,29 @@ class TreatmentComp extends Component {
     });
   }
 
-  uploadImage = (x) => {
+  uploadImage = async (x) => {
     console.log("Time start file to ipfs", Date.now());
     console.log("Submitting file to ipfs...");
     //adding file to the IPFS
     //console.log(this.state.buffer);
-    ipfs
-      .add(this.state.buffer, (error, result) => {
-        console.log("Ipfs result", result);
-        if (error) {
-          console.log("error");
-          console.error(error);
-          return;
-        }
-        console.log("complete");
-        this.setState({ loading: true });
-      })
-      .then((response) => {
-        console.log(response.path);
+    try {
+      const formData = new FormData();
+      formData.append("file", this.state.buffer);
+
+      const resFile = await Axios({
+        method: "post",
+        url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
+        data: formData,
+        headers: {
+          pinata_api_key: REACT_APP_PINATA_API_KEY,
+          pinata_secret_api_key:  REACT_APP_PINATA_API_SECRET,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(resFile);
         if (x == 1) {
           const res = this.props.contract.methods
-            .addPrescriptionTreat(this.state.treatId, response.path)
+            .addPrescriptionTreat(this.state.treatId, resFile.data.IpfsHash)
             .send({ from: this.props.accounts, gas: 1000000 })
             .on("transactionHash", (hash) => {
               this.setState({ loading: false });
@@ -82,26 +82,23 @@ class TreatmentComp extends Component {
             });
         } else if (x == 2) {
           const res = this.props.contract.methods
-            .addReportTreat(this.state.treatId, response.path)
+            .addReportTreat(this.state.treatId, resFile.data.IpfsHash)
             .send({ from: this.props.accounts, gas: 1000000 })
             .on("transactionHash", (hash) => {
               this.setState({ loading: false });
               console.log("Time end trans ended", Date.now());
             });
         }
-      });
+      } catch (err) {
+        console.log(err);
+    }
     console.log("Time end file uploaded", Date.now());
   };
 
   captureFile = (event) => {
     event.preventDefault();
     const file = event.target.files[0];
-    const reader = new window.FileReader();
-    reader.readAsArrayBuffer(file);
-    reader.onloadend = () => {
-      this.setState({ buffer: Buffer(reader.result) });
-      console.log("buffer", this.state.buffer);
-    };
+    this.setState({ buffer: file });
   };
   async handleSubmitadd(event) {
     console.log("Current State" + JSON.stringify(this.state));

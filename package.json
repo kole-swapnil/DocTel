@@ -3,6 +3,8 @@
   "version": "0.1.1",
   "private": true,
   "dependencies": {
+    "@pinata/sdk": "^2.1.0",
+    "axios": "^1.7.7",
     "bootstrap": "^5.1.3",
     "bootstrap-social": "^5.1.1",
     "font-awesome": "^4.7.0",

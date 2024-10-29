@@ -13,12 +13,6 @@ import AllMemComponent from "./AllMemComponent";
 import PatientDetailsComp from "./PatientDetailsComponent";
 import AllTreatmentComponent from "./AllTreatmentComponent";
 import TreatmentHistoryComp from "./TreatmentHistoryComponent";
-const ipfsClient = require("ipfs-http-client");
-const ipfs = ipfsClient.create({
-  host: "ipfs.infura.io",
-  port: 5001,
-  protocol: "https",
-});
 
 class Main extends Component {
   constructor(props) {
@@ -155,7 +149,6 @@ class Main extends Component {
               <TreatmentComp
                 contract={this.state.contract}
                 accounts={this.state.accounts}
-                ipfs={ipfs}
               />
             )}
           />
