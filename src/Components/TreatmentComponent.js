@@ -53,6 +53,8 @@ class TreatmentComp extends Component {
   }
 
   uploadImage = async (x) => {
+    console.log("API Key:", REACT_APP_PINATA_API_KEY);
+    console.log("API Secret:", REACT_APP_PINATA_API_SECRET);
     console.log("Time start file to ipfs", Date.now());
     console.log("Submitting file to ipfs...");
     //adding file to the IPFS
@@ -66,8 +68,8 @@ class TreatmentComp extends Component {
         url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
         data: formData,
         headers: {
-          pinata_api_key: REACT_APP_PINATA_API_KEY,
-          pinata_secret_api_key:  REACT_APP_PINATA_API_SECRET,
+          pinata_api_key: REACT_APP_PINATA_API_KEY.toString(),
+          pinata_secret_api_key:  REACT_APP_PINATA_API_SECRET.toString(),
           "Content-Type": "multipart/form-data",
         },
       });
