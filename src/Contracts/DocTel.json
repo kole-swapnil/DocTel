@@ -2,6 +2,112 @@
   "contractName": "DocTel",
   "abi": [
     {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "treatId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "prescription",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "times",
+          "type": "uint256"
+        }
+      ],
+      "name": "PrescriptionAddedTreat",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "treatId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "report",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "times",
+          "type": "uint256"
+        }
+      ],
+      "name": "ReportAddedTreat",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "treatId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "docAadhar",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "times",
+          "type": "uint256"
+        }
+      ],
+      "name": "doctorAddedTreat",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "treatId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "patAadhar",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "adminAadhar",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "times",
+          "type": "uint256"
+        }
+      ],
+      "name": "treatAdded",
+      "type": "event"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -166,112 +272,6 @@
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "treatId",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "prescription",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "times",
-          "type": "uint256"
-        }
-      ],
-      "name": "PrescriptionAddedTreat",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "treatId",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "report",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "times",
-          "type": "uint256"
-        }
-      ],
-      "name": "ReportAddedTreat",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "treatId",
-          "type": "uint256"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "docAadhar",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "times",
-          "type": "uint256"
-        }
-      ],
-      "name": "doctorAddedTreat",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "treatId",
-          "type": "uint256"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "patAadhar",
-          "type": "uint256"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "adminAadhar",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "times",
-          "type": "uint256"
-        }
-      ],
-      "name": "treatAdded",
-      "type": "event"
     },
     {
       "inputs": [
@@ -526,25 +526,6 @@
           "type": "uint256"
         }
       ],
-      "name": "getdocTreatmentGone",
-      "outputs": [
-        {
-          "internalType": "uint256[]",
-          "name": "",
-          "type": "uint256[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_treatment_Id",
-          "type": "uint256"
-        }
-      ],
       "name": "getPrescriptionTreat",
       "outputs": [
         {
@@ -584,6 +565,25 @@
         }
       ],
       "name": "getTreatmentGone",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_treatment_Id",
+          "type": "uint256"
+        }
+      ],
+      "name": "getdocTreatmentGone",
       "outputs": [
         {
           "internalType": "uint256[]",
@@ -775,6 +775,12 @@
       "events": {},
       "links": {},
       "address": "0x923A951C8701f73083883edA8F01145F94fe1618",
+      "transactionHash": "0xaf4692ca66de6055d5cd14f0857294319a396065a69f9102538ec8794dbc1b4a"
+    },
+    "1981333": {
+      "events": {},
+      "links": {},
+      "address": "0xD6bE320401BA134224DaD28C1b755aAb947ceC8D",
       "transactionHash": "0xaf4692ca66de6055d5cd14f0857294319a396065a69f9102538ec8794dbc1b4a"
     }
   }
