@@ -26,6 +26,7 @@ class Main extends Component {
       doctorAddedTreatEvents: [],
       PrescriptionAddedTreatEvents: [],
       ReportAddedTreatEvents: [],
+      statsRecordedEvents: [],
     };
     this.changeAadhar = this.changeAadhar.bind(this);
   }
@@ -60,6 +61,12 @@ class Main extends Component {
         fromBlock: 0,
       });
       var doctorAddedTreatEvents = res;
+      res = await this.state.contract.getPastEvents("statsRecorded", {
+        fromBlock: 0,
+      });
+      console.log("Stats Recorded", res);
+      var statsRecordedEvents = res;
+      
       res = await this.state.contract.getPastEvents("PrescriptionAddedTreat", {
         fromBlock: 0,
       });
@@ -74,6 +81,7 @@ class Main extends Component {
         doctorAddedTreatEvents,
         PrescriptionAddedTreatEvents,
         ReportAddedTreatEvents,
+        statsRecordedEvents
       });
       console.log("Time end main component", Date.now());
     } catch (error) {}
@@ -101,6 +109,9 @@ class Main extends Component {
             (token) => token.returnValues.treatId === match.params.id
           )}
           ReportAddedTreat={this.state.ReportAddedTreatEvents?.filter(
+            (token) => token.returnValues.treatId === match.params.id
+          )}
+          statsRecorded={this.state.statsRecordedEvents?.filter(
             (token) => token.returnValues.treatId === match.params.id
           )}
         />

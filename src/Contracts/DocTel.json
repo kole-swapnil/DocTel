@@ -2,112 +2,6 @@
   "contractName": "DocTel",
   "abi": [
     {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "treatId",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "prescription",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "times",
-          "type": "uint256"
-        }
-      ],
-      "name": "PrescriptionAddedTreat",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "treatId",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "report",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "times",
-          "type": "uint256"
-        }
-      ],
-      "name": "ReportAddedTreat",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "treatId",
-          "type": "uint256"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "docAadhar",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "times",
-          "type": "uint256"
-        }
-      ],
-      "name": "doctorAddedTreat",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "treatId",
-          "type": "uint256"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "patAadhar",
-          "type": "uint256"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "adminAadhar",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "times",
-          "type": "uint256"
-        }
-      ],
-      "name": "treatAdded",
-      "type": "event"
-    },
-    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -266,12 +160,187 @@
           "internalType": "uint256",
           "name": "_patientAadhar",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_temperature",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_systolicBP",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_diastolicBP",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_heartRate",
+          "type": "string"
         }
       ],
       "name": "addTreatment",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "treatId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "prescription",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "times",
+          "type": "uint256"
+        }
+      ],
+      "name": "PrescriptionAddedTreat",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "treatId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "report",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "times",
+          "type": "uint256"
+        }
+      ],
+      "name": "ReportAddedTreat",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "treatId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "docAadhar",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "times",
+          "type": "uint256"
+        }
+      ],
+      "name": "doctorAddedTreat",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "treatId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "patAadhar",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "temperature",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "systolicBP",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "diastolicBP",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "heartRate",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "times",
+          "type": "uint256"
+        }
+      ],
+      "name": "statsRecorded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "treatId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "patAadhar",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "adminAadhar",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "times",
+          "type": "uint256"
+        }
+      ],
+      "name": "treatAdded",
+      "type": "event"
     },
     {
       "inputs": [
@@ -526,6 +595,25 @@
           "type": "uint256"
         }
       ],
+      "name": "getdocTreatmentGone",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_treatment_Id",
+          "type": "uint256"
+        }
+      ],
       "name": "getPrescriptionTreat",
       "outputs": [
         {
@@ -565,25 +653,6 @@
         }
       ],
       "name": "getTreatmentGone",
-      "outputs": [
-        {
-          "internalType": "uint256[]",
-          "name": "",
-          "type": "uint256[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_treatment_Id",
-          "type": "uint256"
-        }
-      ],
-      "name": "getdocTreatmentGone",
       "outputs": [
         {
           "internalType": "uint256[]",
@@ -752,6 +821,26 @@
           "internalType": "uint256",
           "name": "patientAadhar",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "temperature",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "systolicBP",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "diastolicBP",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "heartRate",
+          "type": "string"
         }
       ],
       "stateMutability": "view",
@@ -782,6 +871,12 @@
       "links": {},
       "address": "0xD6bE320401BA134224DaD28C1b755aAb947ceC8D",
       "transactionHash": "0xaf4692ca66de6055d5cd14f0857294319a396065a69f9102538ec8794dbc1b4a"
+    },
+    "5777": {
+      "events": {},
+      "links": {},
+      "address": "0x7Df75fdb18be530aA058b6E0605A9A6CC6B9dFB0",
+      "transactionHash": "0x02994ee9af1e9f6108a293e76bf030894db3bb30c0c6cb956bcb4026c0efce99"
     }
   }
 }
