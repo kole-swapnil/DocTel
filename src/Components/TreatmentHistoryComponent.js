@@ -13,6 +13,7 @@ function AllEventrender({ treatEv, contract, accounts }) {
     return time;
   };
   let DeSale = "plotDeSale";
+  console.log("treatEv", treatEv);
   return (
     <div className="eventbox">
       {treatEv?.event === "PrescriptionAddedTreat" ||
@@ -35,6 +36,17 @@ function AllEventrender({ treatEv, contract, accounts }) {
       <p>
         {treatEv?.event === "doctorAddedTreat" ? (
           <p>Doctor: {treatEv?.returnValues.docAadhar}</p>
+        ) : null}
+      </p>
+      <p>
+        {treatEv?.event === "statsRecorded" ? (
+          <div>
+            <p>HeartRate: {treatEv?.returnValues.heartRate}</p>
+            <p>Systolic BP: {treatEv?.returnValues.systolicBP}</p>
+            <p>Temperature: {treatEv?.returnValues.temperature}</p>
+            <p>Diastolic BP: {treatEv?.returnValues.diastolicBP}</p>
+          </div>
+          
         ) : null}
       </p>
       <p>
@@ -74,9 +86,14 @@ class TreatmentHistoryComp extends Component {
     //console.log(this.props.plotAddedEvents);
 
     let treatmentEvents = [];
+    
     this.props.treatAdded.map((property) => {
       treatmentEvents.push(property);
     });
+    this.props.statsRecorded.map((property) => {
+      treatmentEvents.push(property);
+    });
+    console.log("statsRecorded", this.props.statsRecorded);
     this.props.doctorAddedTreat.map((property) => {
       treatmentEvents.push(property);
     });

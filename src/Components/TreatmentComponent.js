@@ -12,8 +12,8 @@ import {
 } from "reactstrap";
 import "../App.css";
 import { render } from "react-dom";
-import Axios from 'axios';
-require('dotenv').config();
+import Axios from "axios";
+require("dotenv").config();
 const REACT_APP_PINATA_API_KEY = process.env.REACT_APP_PINATA_API_KEY;
 const REACT_APP_PINATA_API_SECRET = process.env.REACT_APP_PINATA_API_SECRET;
 
@@ -34,6 +34,10 @@ class TreatmentComp extends Component {
       buffer: null,
       docaccount: "",
       docAadhar: 0,
+      temperature: "",
+      systolicBP: "",
+      diastolicBP: "",
+      heartRate: "",
     };
     this.handleSubmitadd = this.handleSubmitadd.bind(this);
     this.handleSubmitmod = this.handleSubmitmod.bind(this);
@@ -69,30 +73,30 @@ class TreatmentComp extends Component {
         data: formData,
         headers: {
           pinata_api_key: REACT_APP_PINATA_API_KEY.toString(),
-          pinata_secret_api_key:  REACT_APP_PINATA_API_SECRET.toString(),
+          pinata_secret_api_key: REACT_APP_PINATA_API_SECRET.toString(),
           "Content-Type": "multipart/form-data",
         },
       });
       console.log(resFile);
-        if (x == 1) {
-          const res = this.props.contract.methods
-            .addPrescriptionTreat(this.state.treatId, resFile.data.IpfsHash)
-            .send({ from: this.props.accounts, gas: 1000000 })
-            .on("transactionHash", (hash) => {
-              this.setState({ loading: false });
-              console.log("Time end trans ended", Date.now());
-            });
-        } else if (x == 2) {
-          const res = this.props.contract.methods
-            .addReportTreat(this.state.treatId, resFile.data.IpfsHash)
-            .send({ from: this.props.accounts, gas: 1000000 })
-            .on("transactionHash", (hash) => {
-              this.setState({ loading: false });
-              console.log("Time end trans ended", Date.now());
-            });
-        }
-      } catch (err) {
-        console.log(err);
+      if (x == 1) {
+        const res = this.props.contract.methods
+          .addPrescriptionTreat(this.state.treatId, resFile.data.IpfsHash)
+          .send({ from: this.props.accounts, gas: 1000000 })
+          .on("transactionHash", (hash) => {
+            this.setState({ loading: false });
+            console.log("Time end trans ended", Date.now());
+          });
+      } else if (x == 2) {
+        const res = this.props.contract.methods
+          .addReportTreat(this.state.treatId, resFile.data.IpfsHash)
+          .send({ from: this.props.accounts, gas: 1000000 })
+          .on("transactionHash", (hash) => {
+            this.setState({ loading: false });
+            console.log("Time end trans ended", Date.now());
+          });
+      }
+    } catch (err) {
+      console.log(err);
     }
     console.log("Time end file uploaded", Date.now());
   };
@@ -103,11 +107,37 @@ class TreatmentComp extends Component {
     this.setState({ buffer: file });
   };
   async handleSubmitadd(event) {
+    const numberRegex = /^\d+(\.\d+)?$/;
+    const { temperature, systolicBP, diastolicBP, heartRate} = this.state;
+
+    if (
+      !numberRegex.test(temperature) ||
+      !numberRegex.test(systolicBP) ||
+      !numberRegex.test(diastolicBP) ||
+      !numberRegex.test(heartRate)
+    ) {
+      alert(
+        "Please enter valid numeric values for all vital signs (digits with optional decimals)."
+      );
+      return;
+    }
     console.log("Current State" + JSON.stringify(this.state));
     event.preventDefault();
     console.log("Time start Treatment Add", Date.now());
+    console.log("Patient Aadhar", this.state.patAadhar);
+    console.log("Temperature", this.state.temperature);
+    console.log("Systolic BP", this.state.systolicBP);
+    console.log("Diastolic BP", this.state.diastolicBP);
+    console.log("Heart Rate", this.state.heartRate);
     const res = await this.props.contract.methods
-      .addTreatment(localStorage.getItem("myAadhar"), this.state.patAadhar)
+      .addTreatment(
+        localStorage.getItem("myAadhar"),
+        this.state.patAadhar,
+        this.state.temperature,
+        this.state.systolicBP,
+        this.state.diastolicBP,
+        this.state.heartRate
+      )
       .send({ from: this.props.accounts, gas: 1000000 });
     const treatcount = await this.props.contract.methods
       .treatmentCount()
@@ -170,6 +200,70 @@ class TreatmentComp extends Component {
               />
             </Col>
           </FormGroup>
+          <FormGroup row>
+            <Label htmlFor="temperature" md={2}>
+              Temperature (°C)
+            </Label>
+            <Col md={10}>
+              <Input
+                type="text"
+                id="temperature"
+                name="temperature"
+                placeholder="e.g., 36.7"
+                value={this.state.temperature}
+                onChange={this.handleInputChange}
+              />
+            </Col>
+          </FormGroup>
+
+          <FormGroup row>
+            <Label htmlFor="systolicBP" md={2}>
+              Systolic BP (mmHg)
+            </Label>
+            <Col md={10}>
+              <Input
+                type="text"
+                id="systolicBP"
+                name="systolicBP"
+                placeholder="e.g. 120"
+                value={this.state.systolicBP}
+                onChange={this.handleInputChange}
+              />
+            </Col>
+          </FormGroup>
+
+          <FormGroup row>
+            <Label htmlFor="diastolicBP" md={2}>
+              Diastolic BP (mmHg)
+            </Label>
+            <Col md={10}>
+              <Input
+                type="text"
+                id="diastolicBP"
+                name="diastolicBP"
+                placeholder="e.g. 80"
+                value={this.state.diastolicBP}
+                onChange={this.handleInputChange}
+              />
+            </Col>
+          </FormGroup>
+
+          <FormGroup row>
+            <Label htmlFor="heartRate" md={2}>
+              Heart Rate (bpm)
+            </Label>
+            <Col md={10}>
+              <Input
+                type="text"
+                id="heartRate"
+                name="heartRate"
+                placeholder="e.g. 85"
+                value={this.state.heartRate}
+                onChange={this.handleInputChange}
+              />
+            </Col>
+          </FormGroup>
+
           <FormGroup row>
             <Col md={{ size: 8 }}>
               <Button type="submit" color="primary">
