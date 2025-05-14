@@ -26,11 +26,15 @@ class Header extends Component {
     return (
       <React.Fragment>
         <Navbar dark expand="md">
-          <div className="container justify-center">
-            <NavbarToggler onClick={this.togglenav} />
+          <div className="container navbar-container">
             <NavbarBrand className="mr-auto">DOCTEL</NavbarBrand>
-            <Collapse isOpen={this.state.isNavOpen} navbar>
-              <Nav navbar>
+            <NavbarToggler onClick={this.togglenav} />
+            <Collapse
+              isOpen={this.state.isNavOpen}
+              navbar
+              className="d-flex justify-content-between w-100"
+            >
+              <Nav navbar className="nav-items">
                 <NavItem>
                   <NavLink className="nav-link" to="/home">
                     Home
@@ -67,20 +71,18 @@ class Header extends Component {
                   </NavLink>
                 </NavItem>
               </Nav>
-              <p
-                className="right-align"
-                style={{ float: "right", color: "white" }}
-              >
-                {localStorage.getItem("myAadhar") != 0
-                  ? `Logged in: ${localStorage.getItem("myAadhar")}`
-                  : "Not Logged in"}
-                <br />
+              <div className="right-info">
+                <div>
+                  {localStorage.getItem("myAadhar") !== "0"
+                    ? `Logged in: ${localStorage.getItem("myAadhar")}`
+                    : "Not Logged in"}
+                </div>
                 <small>
-                  {localStorage.getItem("wallet") != 0
+                  {localStorage.getItem("wallet") !== "0"
                     ? `Wallet: ${localStorage.getItem("wallet")}`
                     : "Not Connected"}
                 </small>
-              </p>
+              </div>
             </Collapse>
           </div>
         </Navbar>

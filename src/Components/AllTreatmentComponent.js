@@ -28,7 +28,7 @@ function Allpatrender({ treatment }) {
 
   return (
     <Card>
-      <Link to={`/treatment/${treatment.treatment_Id}`}>
+      <Link to={`/treatment/${treatment.treatment_Id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
         <i className="fa fa-medkit fa-5x"></i>
         <CardBody>
           <CardTitle>Treatment ID : {treatment.treatment_Id}</CardTitle>

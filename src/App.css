@@ -58,3 +58,22 @@ address {
 .navbar-dark {
   background-color: #000000;
 }
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.nav-items {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.right-info {
+  color: white;
+  text-align: right;
+}
+
