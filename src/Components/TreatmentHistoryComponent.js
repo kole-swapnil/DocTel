@@ -4,65 +4,79 @@ import "./HistoryComp.css";
 
 const ETHER = 1000000000000000000;
 
+const getEventDisplayName = (eventName) => {
+  switch (eventName) {
+    case "treatAdded":
+      return "Treatment Added";
+    case "statsRecorded":
+      return "Vitals Recorded";
+    case "doctorAddedTreat":
+      return "Doctor Assigned";
+    case "PrescriptionAddedTreat":
+      return "Prescription Added";
+    case "ReportAddedTreat":
+      return "Report Added";
+    default:
+      return eventName;
+  }
+};
+
 function AllEventrender({ treatEv, contract, accounts }) {
   const getTimeFormat = (timeCreated) => {
     let day = moment.unix(timeCreated);
-    let xy = timeCreated;
-    let date = new Date(xy * 1000);
+    let date = new Date(timeCreated * 1000);
     let time = day.format("MMMM Do, YYYY [at] h:mm A");
     return time;
   };
-  let DeSale = "plotDeSale";
-  console.log("treatEv", treatEv);
+
   return (
     <div className="eventbox">
-      {treatEv?.event === "PrescriptionAddedTreat" ||
-      treatEv?.event === "ReportAddedTreat" ? (
+      {(treatEv?.event === "PrescriptionAddedTreat" ||
+        treatEv?.event === "ReportAddedTreat") && (
         <a
           href={`https://ipfs.io/ipfs/${
             treatEv?.returnValues.report || treatEv?.returnValues.prescription
           }`}
           target="_blank"
+          rel="noreferrer"
         >
           <img
-            style={{ "max-width": "90%" }}
+            style={{ maxWidth: "90%" }}
             src={`https://ipfs.io/ipfs/${
               treatEv?.returnValues.report || treatEv?.returnValues.prescription
             }`}
+            alt="IPFS Content"
           />
         </a>
-      ) : null}
-      <h6>Event: {treatEv?.event}</h6>
-      <p>
-        {treatEv?.event === "doctorAddedTreat" ? (
-          <p>Doctor: {treatEv?.returnValues.docAadhar}</p>
-        ) : null}
-      </p>
-      <p>
-        {treatEv?.event === "statsRecorded" ? (
-          <div>
-            <p>HeartRate: {treatEv?.returnValues.heartRate}</p>
-            <p>Systolic BP: {treatEv?.returnValues.systolicBP}</p>
-            <p>Temperature: {treatEv?.returnValues.temperature}</p>
-            <p>Diastolic BP: {treatEv?.returnValues.diastolicBP}</p>
-          </div>
-          
-        ) : null}
-      </p>
-      <p>
-        {treatEv?.event === "PrescriptionAddedTreat" ? (
-          <p style={{ "word-wrap": "break-word" }}>
-            Prescription: {treatEv?.returnValues.prescription}
-          </p>
-        ) : null}
-      </p>
-      <p>
-        {treatEv?.event === "ReportAddedTreat" ? (
-          <p style={{ "word-wrap": "break-word" }}>
-            Report: {treatEv?.returnValues.report}
-          </p>
-        ) : null}
-      </p>
+      )}
+
+      <h6>Event: {getEventDisplayName(treatEv?.event)}</h6>
+
+      {treatEv?.event === "doctorAddedTreat" && (
+        <p>Doctor: {treatEv?.returnValues.docAadhar}</p>
+      )}
+
+      {treatEv?.event === "statsRecorded" && (
+        <div>
+          <p>Heart Rate: {treatEv?.returnValues.heartRate}</p>
+          <p>Systolic BP: {treatEv?.returnValues.systolicBP}</p>
+          <p>Diastolic BP: {treatEv?.returnValues.diastolicBP}</p>
+          <p>Temperature: {treatEv?.returnValues.temperature}</p>
+        </div>
+      )}
+
+      {treatEv?.event === "PrescriptionAddedTreat" && (
+        <p style={{ wordWrap: "break-word" }}>
+          Prescription: {treatEv?.returnValues.prescription}
+        </p>
+      )}
+
+      {treatEv?.event === "ReportAddedTreat" && (
+        <p style={{ wordWrap: "break-word" }}>
+          Report: {treatEv?.returnValues.report}
+        </p>
+      )}
+
       <p>Time: {getTimeFormat(treatEv.returnValues.times)}</p>
       <br />
     </div>
@@ -79,52 +93,37 @@ class TreatmentHistoryComp extends Component {
   }
 
   async componentDidMount() {
-    var rex = await this.props.contract?.methods
+    const treatment = await this.props.contract?.methods
       .treatments(this.props.matchId)
       .call();
-    this.setState({ treatment: rex });
-    //console.log(this.props.plotAddedEvents);
 
-    let treatmentEvents = [];
-    
-    this.props.treatAdded.map((property) => {
-      treatmentEvents.push(property);
-    });
-    this.props.statsRecorded.map((property) => {
-      treatmentEvents.push(property);
-    });
-    console.log("statsRecorded", this.props.statsRecorded);
-    this.props.doctorAddedTreat.map((property) => {
-      treatmentEvents.push(property);
-    });
-    this.props.PrescriptionAddedTreat.map((property) => {
-      treatmentEvents.push(property);
-    });
-    this.props.ReportAddedTreat.map((property) => {
-      treatmentEvents.push(property);
-    });
-    treatmentEvents.sort((a, b) => {
-      return a.returnValues.times - b.returnValues.times;
-    });
-    console.log("events", treatmentEvents);
-    this.setState({ treatmentEvents });
-    console.log(this.state.treatmentEvents);
+    const treatmentEvents = [
+      ...this.props.treatAdded,
+      ...this.props.statsRecorded,
+      ...this.props.doctorAddedTreat,
+      ...this.props.PrescriptionAddedTreat,
+      ...this.props.ReportAddedTreat,
+    ];
+
+    treatmentEvents.sort(
+      (a, b) => a.returnValues.times - b.returnValues.times
+    );
+
+    this.setState({ treatment, treatmentEvents });
   }
 
   render() {
-    const Menu = this.state.treatmentEvents.map((x) => {
-      return (
-        <div key={x.id} className="events">
-          <AllEventrender
-            treatEv={x}
-            contract={this.props.contract}
-            accounts={this.props.accounts}
-          />
-          <br />
-          <br />
-        </div>
-      );
-    });
+    const eventItems = this.state.treatmentEvents.map((ev, idx) => (
+      <div key={idx} className="events">
+        <AllEventrender
+          treatEv={ev}
+          contract={this.props.contract}
+          accounts={this.props.accounts}
+        />
+        <br />
+        <br />
+      </div>
+    ));
 
     return (
       <div className="body_style">
@@ -155,7 +154,7 @@ class TreatmentHistoryComp extends Component {
         <hr />
         <h2>Events</h2>
         <br />
-        <div className="eventrow">{Menu}</div>
+        <div className="eventrow">{eventItems}</div>
         <br />
         <br />
       </div>

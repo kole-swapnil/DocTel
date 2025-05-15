@@ -59,7 +59,7 @@ address {
   background-color: #000000;
 }
 
-.navbar-container {
+/* .navbar-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -75,5 +75,5 @@ address {
 .right-info {
   color: white;
   text-align: right;
-}
+} */
 
