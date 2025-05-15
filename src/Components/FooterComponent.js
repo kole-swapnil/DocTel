@@ -7,7 +7,7 @@ function Footer(props) {
       <div className="container" style={{ bottom: 0 }}>
         <div className="row justify-content-center">
           <div className="col-auto">
-            <p>© Copyright @2022 Swapnil Kole</p>
+            <p>© Copyright @2025 Swapnil Kole</p>
           </div>
         </div>
       </div>
