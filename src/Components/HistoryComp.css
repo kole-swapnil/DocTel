@@ -1,161 +1,220 @@
-.body_style {
-  padding-right: 2%;
+.history-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
 }
 
-.details {
-  box-sizing: border-box;
-  text-align: left;
-  padding: 12%;
-  padding-top: 5%;
-  margin-bottom: 2%;
+/* ── Treatment info header ───────────────────────────── */
+.history-header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.5rem;
+  align-items: start;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2.5rem;
 }
 
-.eventbox {
-  border: 2px solid rgb(102, 102, 102);
-  width: 100%;
-  padding-top: 8%;
-  background-color: rgba(143, 143, 143, 0.123);
+.history-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0369a1, #0ea5e9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.75rem;
+  flex-shrink: 0;
 }
 
-.eventrow {
-  padding: 0% 6% 5% 9%;
+.history-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 0.75rem;
 }
 
-.plotimage {
-  width: 80%;
-  margin: 0% 8% 0% 8%;
+.history-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 
-.column1 {
-  font-weight: bold;
+.history-info-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
 }
 
-.column2 {
-  font-size: 14px;
+.history-info-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--dark);
+  font-family: 'Courier New', monospace;
 }
 
-hr {
-  clear: both;
+/* ── Events section ──────────────────────────────────── */
+.events-section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-muted);
+  margin: 0 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
-@media screen and (min-width: 480px) {
-  .events {
-    display: inline-block;
-    float: left;
-    width: 45%;
-    margin-left: 5%;
+.events-section-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Timeline ────────────────────────────────────────── */
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--primary-light), transparent);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -2rem;
+  top: 1rem;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 0 2px var(--primary-light);
+  flex-shrink: 0;
+}
+
+.timeline-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease;
+}
+
+.timeline-card:hover {
+  box-shadow: var(--shadow);
+}
+
+.timeline-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.timeline-event-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.timeline-event-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: white;
+}
+
+.timeline-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.timeline-detail {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0.2rem 0;
+}
+
+.timeline-detail strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.timeline-ipfs-img {
+  margin-top: 0.75rem;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.timeline-ipfs-img img {
+  max-width: 100%;
+  display: block;
+}
+
+.timeline-hash {
+  font-size: 0.75rem;
+  font-family: 'Courier New', monospace;
+  color: var(--text-muted);
+  word-break: break-all;
+  margin-top: 0.4rem;
+}
+
+@media (max-width: 600px) {
+  .history-header {
+    grid-template-columns: 1fr;
+    padding: 1.25rem;
   }
-  .eventbox {
-    padding-left: 2%;
-    padding-right: 2%;
-    /* margin-right: 2%; */
+  .history-icon {
+    display: none;
   }
-  .eventrow {
-    margin-bottom: 120%;
-    padding-left: 5%;
+  .history-info-grid {
+    grid-template-columns: 1fr 1fr;
   }
-  .column1 {
-    width: 40%;
+  .timeline {
+    padding-left: 1.5rem;
   }
-  .column2 {
-    width: 60%;
+  .timeline-card {
+    padding: 1rem;
   }
-  .column1,
-  .column2 {
-    display: inline-block;
-    float: left;
-    line-height: 30px;
-  }
-  .details {
-    margin-bottom: 25%;
+  .timeline-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
   }
 }
 
-@media screen and (min-width: 637px) {
-  .eventbox {
-    padding-top: 7%;
-  }
-  .eventrow {
-    margin-bottom: 40%;
-    /* padding-left: 8%; */
-  }
-  .column1,
-  .column2 {
-    width: 50%;
-  }
-  .details {
-    margin-bottom: 20%;
-  }
-}
-
-@media screen and (min-width: 770px) {
-  .events {
-    width: 31%;
-    margin-left: 2%;
-  }
-  .eventrow {
-    margin-left: 0%;
-    margin-bottom: 30%;
-  }
-  .plotimage {
-    width: 45%;
-    padding-top: 1%;
-    margin-left: 5%;
-    margin-right: 2%;
-  }
-  .plotimage,
-  .details {
-    display: inline-block;
-    float: left;
-  }
-  .details {
-    width: 45%;
-    padding: 0% 0% 0% 4%;
-    margin-bottom: 5%;
-  }
-  .column1 {
-    width: 35%;
-  }
-  .column2 {
-    width: 65%;
-  }
-  .column1,
-  .column2 {
-    line-height: 40px;
-  }
-}
-
-@media screen and (min-width: 1042px) {
-  .events {
-    width: 23%;
-  }
-  .eventbox {
-    padding-top: 10%;
-  }
-  .eventrow {
-    margin-bottom: 33%;
-  }
-  .plotimage {
-    width: 40%;
-    margin-left: 10%;
-  }
-  .details {
-    width: 45%;
-    margin-top: 3%;
-    margin-bottom: 7%;
-  }
-  .column2 {
-    font-size: 15px;
-  }
-}
-
-@media screen and (min-width: 1200px) {
-  .events {
-    width: 22%;
-  }
-  .eventrow {
-    margin-left: 4%;
-    margin-right: 2%;
-    margin-bottom: 27%;
+@media (max-width: 400px) {
+  .history-info-grid {
+    grid-template-columns: 1fr;
   }
 }

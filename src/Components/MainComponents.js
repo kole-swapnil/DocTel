@@ -27,175 +27,208 @@ class Main extends Component {
       PrescriptionAddedTreatEvents: [],
       ReportAddedTreatEvents: [],
       statsRecordedEvents: [],
+      connecting: false,
+      connectionError: null,
     };
     this.changeAadhar = this.changeAadhar.bind(this);
+    this.renderCardWithId = this.renderCardWithId.bind(this);
+    this.connectWallet = this.connectWallet.bind(this);
   }
 
   componentDidMount = async () => {
+    // Silently check if the wallet is already authorized (no MetaMask prompt).
+    // eth_accounts returns [] if not yet authorized, without triggering a popup.
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.request({ method: "eth_accounts" });
+        if (accounts.length > 0) {
+          await this.connectWallet();
+        }
+      } catch (_) {
+        // Not authorized yet — user will connect manually via the button
+      }
+    }
+  };
+
+  connectWallet = async () => {
+    this.setState({ connecting: true, connectionError: null });
     try {
-      console.log("Time start main component", Date.now());
       const web3 = await getWeb3();
       const accounts = await web3.eth.getAccounts();
       const balance = await web3.eth.getBalance(accounts[0]);
-      const networkId = await web3.eth.net.getId();
+      const networkId = Number(await web3.eth.net.getId());
       const deployedNetwork = BNContract.networks[networkId];
-      const instance = new web3.eth.Contract(
-        BNContract.abi,
-        deployedNetwork && deployedNetwork.address
-      );
-      console.log("Time init state main component", Date.now());
+      const contractAddress = deployedNetwork?.address;
+
+      if (!contractAddress) {
+        throw new Error(
+          `Contract not deployed on network ID ${networkId}. ` +
+          `Please switch MetaMask to Polygon Amoy (network ID 80002).`
+        );
+      }
+
+      const instance = new web3.eth.Contract(BNContract.abi, contractAddress);
+
       this.setState({
         web3,
         accounts: accounts[0],
         contract: instance,
-        balance: balance,
+        balance,
+        connecting: false,
       });
       localStorage.setItem("wallet", accounts[0]);
-      console.log("Time start event get", Date.now());
-      var treatAddedEvents = [];
-      var res = await this.state.contract.getPastEvents("treatAdded", {
-        fromBlock: 0,
-      });
-      treatAddedEvents = res;
-      res = await this.state.contract.getPastEvents("doctorAddedTreat", {
-        fromBlock: 0,
-      });
-      var doctorAddedTreatEvents = res;
-      res = await this.state.contract.getPastEvents("statsRecorded", {
-        fromBlock: 0,
-      });
-      console.log("Stats Recorded", res);
-      var statsRecordedEvents = res;
-      
-      res = await this.state.contract.getPastEvents("PrescriptionAddedTreat", {
-        fromBlock: 0,
-      });
-      var PrescriptionAddedTreatEvents = res;
-      res = await this.state.contract.getPastEvents("ReportAddedTreat", {
-        fromBlock: 0,
-      });
-      var ReportAddedTreatEvents = res;
-      console.log("Time end event get", Date.now());
-      this.setState({
-        treatAddedEvents,
-        doctorAddedTreatEvents,
-        PrescriptionAddedTreatEvents,
-        ReportAddedTreatEvents,
-        statsRecordedEvents
-      });
-      console.log("Time end main component", Date.now());
-    } catch (error) {}
+
+      try {
+        const [
+          treatAddedEvents,
+          doctorAddedTreatEvents,
+          statsRecordedEvents,
+          PrescriptionAddedTreatEvents,
+          ReportAddedTreatEvents,
+        ] = await Promise.all([
+          instance.getPastEvents("treatAdded", { fromBlock: 11555373 }),
+          instance.getPastEvents("doctorAddedTreat", { fromBlock: 11555373 }),
+          instance.getPastEvents("statsRecorded", { fromBlock: 11555373 }),
+          instance.getPastEvents("PrescriptionAddedTreat", { fromBlock: 11555373 }),
+          instance.getPastEvents("ReportAddedTreat", { fromBlock: 11555373 }),
+        ]);
+
+        this.setState({
+          treatAddedEvents,
+          doctorAddedTreatEvents,
+          PrescriptionAddedTreatEvents,
+          ReportAddedTreatEvents,
+          statsRecordedEvents,
+        });
+      } catch (_eventsError) {
+        // RPC may reject broad log queries — app still works without history
+      }
+    } catch (error) {
+      this.setState({ connectionError: error.message, connecting: false });
+    }
   };
 
-  changeAadhar = async (aad) => {
+  changeAadhar = (aad) => {
     this.setState({ aadhar: aad });
-    console.log(aad);
   };
+
+  renderCardWithId({ match }) {
+    const id = match.params.id;
+    return (
+      <TreatmentHistoryComp
+        contract={this.state.contract}
+        accounts={this.state.accounts}
+        matchId={id}
+        treatAdded={this.state.treatAddedEvents?.filter(
+          (token) => token.returnValues.treatId === id
+        )}
+        doctorAddedTreat={this.state.doctorAddedTreatEvents?.filter(
+          (token) => token.returnValues.treatId === id
+        )}
+        PrescriptionAddedTreat={this.state.PrescriptionAddedTreatEvents?.filter(
+          (token) => token.returnValues.treatId === id
+        )}
+        ReportAddedTreat={this.state.ReportAddedTreatEvents?.filter(
+          (token) => token.returnValues.treatId === id
+        )}
+        statsRecorded={this.state.statsRecordedEvents?.filter(
+          (token) => token.returnValues.treatId === id
+        )}
+      />
+    );
+  }
 
   render() {
-    const CardWithId = ({ match }) => {
-      return (
-        <TreatmentHistoryComp
-          contract={this.state.contract}
-          accounts={this.state.accounts}
-          matchId={match.params.id}
-          treatAdded={this.state.treatAddedEvents?.filter(
-            (token) => token.returnValues.treatId === match.params.id
-          )}
-          doctorAddedTreat={this.state.doctorAddedTreatEvents?.filter(
-            (token) => token.returnValues.treatId === match.params.id
-          )}
-          PrescriptionAddedTreat={this.state.PrescriptionAddedTreatEvents?.filter(
-            (token) => token.returnValues.treatId === match.params.id
-          )}
-          ReportAddedTreat={this.state.ReportAddedTreatEvents?.filter(
-            (token) => token.returnValues.treatId === match.params.id
-          )}
-          statsRecorded={this.state.statsRecordedEvents?.filter(
-            (token) => token.returnValues.treatId === match.params.id
-          )}
-        />
-      );
-    };
+    const { contract, connecting, connectionError } = this.state;
 
     return (
       <div className="App">
-        <Header />
-        <Switch>
-          <Route
-            exact
-            path="/home"
-            component={() => (
-              <Home
-                contract={this.state.contract}
-                accounts={this.state.accounts}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/patient"
-            component={() => (
-              <PatientComp
-                contract={this.state.contract}
-                accounts={this.state.accounts}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/signup"
-            component={() => (
-              <SignUp
-                contract={this.state.contract}
-                accounts={this.state.accounts}
-                changeAadhar={this.changeAadhar}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/treatment"
-            component={() => (
-              <TreatmentComp
-                contract={this.state.contract}
-                accounts={this.state.accounts}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/members"
-            component={() => (
-              <AllMemComponent
-                contract={this.state.contract}
-                accounts={this.state.accounts}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/patdata"
-            component={() => (
-              <PatientDetailsComp
-                contract={this.state.contract}
-                accounts={this.state.accounts}
-              />
-            )}
-          />
-          <Route
-            exact
-            path="/treat"
-            component={() => (
-              <AllTreatmentComponent
-                contract={this.state.contract}
-                accounts={this.state.accounts}
-              />
-            )}
-          />
-          <Route path="/treatment/:id" component={CardWithId} />
-          <Redirect to="/home" />
-        </Switch>
+        <Header
+          connected={!!contract}
+          connecting={connecting}
+          connectionError={connectionError}
+          connectWallet={this.connectWallet}
+        />
+        <div className="page-content">
+          <Switch>
+            <Route
+              exact
+              path="/home"
+              render={() => (
+                <Home
+                  contract={contract}
+                  accounts={this.state.accounts}
+                  connected={!!contract}
+                  connecting={connecting}
+                  connectWallet={this.connectWallet}
+                />
+              )}
+            />
+            <Route
+              exact
+              path="/patient"
+              render={() => (
+                <PatientComp
+                  contract={contract}
+                  accounts={this.state.accounts}
+                />
+              )}
+            />
+            <Route
+              exact
+              path="/signup"
+              render={() => (
+                <SignUp
+                  contract={contract}
+                  accounts={this.state.accounts}
+                  changeAadhar={this.changeAadhar}
+                />
+              )}
+            />
+            <Route
+              exact
+              path="/treatment"
+              render={() => (
+                <TreatmentComp
+                  contract={contract}
+                  accounts={this.state.accounts}
+                />
+              )}
+            />
+            <Route
+              exact
+              path="/members"
+              render={() => (
+                <AllMemComponent
+                  contract={contract}
+                  accounts={this.state.accounts}
+                />
+              )}
+            />
+            <Route
+              exact
+              path="/patdata"
+              render={() => (
+                <PatientDetailsComp
+                  contract={contract}
+                  accounts={this.state.accounts}
+                />
+              )}
+            />
+            <Route
+              exact
+              path="/treat"
+              render={() => (
+                <AllTreatmentComponent
+                  contract={contract}
+                  accounts={this.state.accounts}
+                />
+              )}
+            />
+            <Route path="/treatment/:id" render={this.renderCardWithId} />
+            <Redirect to="/home" />
+          </Switch>
+        </div>
         <Footer />
       </div>
     );

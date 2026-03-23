@@ -1,18 +1,21 @@
 import React, { Component } from "react";
-import { Button, Form, FormGroup, Label, Input, Col } from "reactstrap";
 import "../App.css";
 
 class PatientComp extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      patAadhar: 0,
-      weight: 0,
-      height: 0,
-      gender: 0,
-      bloodtype: 0,
-      dob: 0,
+      patAadhar: "",
+      weight: "",
+      height: "",
+      gender: "Male",
+      bloodtype: "A",
+      dob: "",
       location: "",
+      validate: false,
+      validateText: "",
+      submitting: false,
+      success: false,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -21,60 +24,49 @@ class PatientComp extends Component {
   }
 
   handleInputChange(event) {
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
-    this.setState({
-      [name]: value,
-    });
+    const { name, value } = event.target;
+    this.setState({ [name]: value });
   }
 
   async handleSubmit(event) {
     event.preventDefault();
+    this.setState({ success: false });
     if (this.handleValidateAll() === "ok") {
-      let genderLocal = this.Gender(this.state.gender);
-      let bloodtypeLocal = this.Bloodtype(this.state.bloodtype);
-      let dobNew = +new Date(this.state.dob);
-      console.log(
-        "Current State",
-        this.state.patAadhar,
-        this.state.weight,
-        this.state.height,
-        genderLocal,
-        dobNew / 1000,
-        bloodtypeLocal,
-        this.state.location
-      );
-      console.log("Time start Add patient", Date.now());
-      const res = await this.props.contract.methods
-        .addPatient(
-          this.state.patAadhar,
-          this.state.weight,
-          this.state.height,
-          genderLocal,
-          dobNew / 1000,
-          bloodtypeLocal,
-          this.state.location
-        )
-        .send({ from: this.props.accounts, gas: 1000000 });
-      console.log(res);
-      console.log("Time end Add patient", Date.now());
+      const genderLocal = this.Gender(this.state.gender);
+      const bloodtypeLocal = this.Bloodtype(this.state.bloodtype);
+      const dobNew = +new Date(this.state.dob);
+      this.setState({ submitting: true });
+      try {
+        await this.props.contract.methods
+          .addPatient(
+            this.state.patAadhar,
+            this.state.weight,
+            this.state.height,
+            genderLocal,
+            dobNew / 1000,
+            bloodtypeLocal,
+            this.state.location
+          )
+          .send({ from: this.props.accounts, gas: 1000000 });
+        this.setState({ success: true, validate: false });
+      } catch (err) {
+        this.setState({ validate: true, validateText: `Transaction failed: ${err.message}` });
+      } finally {
+        this.setState({ submitting: false });
+      }
     } else {
       this.setState({ validate: true });
     }
   }
 
   handleValidateAll = () => {
-    if (this.state.patAadhar.length > 10) {
-      this.setState({
-        validateText: "Aadhar no. should be less than 10 digits",
-      });
-    } else if (this.state.patAadhar.length < 10) {
-      this.setState({
-        validateText: "Aadhar no. should be more than 10 digits",
-      });
-    } else if (!new RegExp("^[0-9]*$").test(this.state.patAadhar)) {
-      this.setState({ validateText: "Aadhar no. should be only digits" });
+    const aadharStr = String(this.state.patAadhar);
+    if (aadharStr.length > 10) {
+      this.setState({ validateText: "Aadhar no. should be 10 digits" });
+    } else if (aadharStr.length < 10) {
+      this.setState({ validateText: "Aadhar no. should be 10 digits" });
+    } else if (!new RegExp("^[0-9]*$").test(aadharStr)) {
+      this.setState({ validateText: "Aadhar no. should contain only digits" });
     } else if (this.state.weight > 500000) {
       this.setState({ validateText: "Weight cannot be more than 500 kgs" });
     } else if (this.state.height > 300) {
@@ -87,100 +79,114 @@ class PatientComp extends Component {
 
   Gender(genInput) {
     switch (genInput) {
-      case "Male":
-        return 0;
-      case "Female":
-        return 1;
+      case "Male": return 0;
+      case "Female": return 1;
+      default: return 0;
     }
   }
 
   Bloodtype(bloodInput) {
     switch (bloodInput) {
-      case "A":
-        return 0;
-      case "B":
-        return 1;
-      case "AB":
-        return 2;
-      case "O":
-        return 3;
+      case "A": return 0;
+      case "B": return 1;
+      case "AB": return 2;
+      case "O": return 3;
+      default: return 0;
     }
   }
 
   render() {
-    return (
-      <div className="container">
-        <h2>Add Patient</h2>
+    const { submitting, validate, validateText, success } = this.state;
 
-        <Form onSubmit={this.handleSubmit}>
-          <FormGroup row>
-            <Label htmlFor="patAadhar" md={2}>
-              Patient Aadhar
-            </Label>
-            <Col md={10}>
-              <Input
-                type="number"
-                id="patAadhar"
+    return (
+      <div style={{ maxWidth: 680, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
+        <div style={{ marginBottom: "2rem" }}>
+          <h2 className="section-title">Register Patient</h2>
+          <p className="section-subtitle">Add a new patient record to the blockchain</p>
+        </div>
+
+        {success && (
+          <div style={{
+            background: "#f0fdf4", border: "1px solid #bbf7d0", color: "#14532d",
+            padding: "0.9rem 1.25rem", borderRadius: "var(--radius-sm)",
+            fontSize: "0.9rem", marginBottom: "1.5rem",
+            display: "flex", alignItems: "center", gap: "0.5rem",
+          }}>
+            <i className="fa fa-check-circle" aria-hidden="true"></i>
+            Patient registered successfully on-chain.
+          </div>
+        )}
+
+        {validate && validateText && (
+          <div style={{
+            background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b",
+            padding: "0.9rem 1.25rem", borderRadius: "var(--radius-sm)",
+            fontSize: "0.9rem", marginBottom: "1.5rem",
+          }}>
+            {validateText}
+          </div>
+        )}
+
+        <div style={{
+          background: "#ffffff", border: "1px solid var(--border)",
+          borderRadius: "var(--radius-lg)", padding: "2rem",
+          boxShadow: "var(--shadow-sm)",
+        }}>
+          <div className="dt-grid-2">
+            <div style={{ gridColumn: "1 / -1" }}>
+              <label className="dt-label">Patient Aadhar <span style={{ color: "#ef4444" }}>*</span></label>
+              <input
+                className="dt-input"
+                type="text"
                 name="patAadhar"
-                placeholder="Patient Aadhar"
+                placeholder="10-digit Aadhar number"
                 value={this.state.patAadhar}
                 onChange={this.handleInputChange}
+                maxLength={10}
               />
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Label htmlFor="weight" md={2}>
-              Weight
-            </Label>
-            <Col md={10}>
-              <Input
+            </div>
+
+            <div>
+              <label className="dt-label">Weight (kg)</label>
+              <input
+                className="dt-input"
                 type="number"
-                id="weight"
                 name="weight"
-                placeholder="Weight"
+                placeholder="e.g. 70"
                 value={this.state.weight}
                 onChange={this.handleInputChange}
               />
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Label htmlFor="height" md={2}>
-              Height
-            </Label>
-            <Col md={10}>
-              <Input
+            </div>
+
+            <div>
+              <label className="dt-label">Height (cm)</label>
+              <input
+                className="dt-input"
                 type="number"
-                id="height"
                 name="height"
-                placeholder="Height"
+                placeholder="e.g. 175"
                 value={this.state.height}
                 onChange={this.handleInputChange}
               />
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Label htmlFor="gender" md={2}>
-              Gender
-            </Label>
-            <Col md={4}>
-              <Input
-                type="select"
+            </div>
+
+            <div>
+              <label className="dt-label">Gender</label>
+              <select
+                className="dt-input"
                 name="gender"
                 value={this.state.gender}
                 onChange={this.handleInputChange}
               >
                 <option>Male</option>
                 <option>Female</option>
-              </Input>
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Label htmlFor="bloodtype" md={2}>
-              Blood Type
-            </Label>
-            <Col md={4}>
-              <Input
-                type="select"
+              </select>
+            </div>
+
+            <div>
+              <label className="dt-label">Blood Type</label>
+              <select
+                className="dt-input"
                 name="bloodtype"
                 value={this.state.bloodtype}
                 onChange={this.handleInputChange}
@@ -189,52 +195,54 @@ class PatientComp extends Component {
                 <option>B</option>
                 <option>AB</option>
                 <option>O</option>
-              </Input>
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Label htmlFor="dob" md={2}>
-              Date of Birth
-            </Label>
-            <Col md={10}>
-              <Input
+              </select>
+            </div>
+
+            <div style={{ gridColumn: "1 / -1" }}>
+              <label className="dt-label">Date of Birth</label>
+              <input
+                className="dt-input"
                 type="datetime-local"
-                id="dob"
                 name="dob"
-                placeholder="dob"
                 value={this.state.dob}
                 onChange={this.handleInputChange}
               />
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Label htmlFor="location" md={2}>
-              Location
-            </Label>
-            <Col md={10}>
-              <Input
+            </div>
+
+            <div style={{ gridColumn: "1 / -1" }}>
+              <label className="dt-label">Location</label>
+              <input
+                className="dt-input"
                 type="text"
-                id="location"
                 name="location"
-                placeholder="Location"
+                placeholder="City, Country"
                 value={this.state.location}
                 onChange={this.handleInputChange}
               />
-            </Col>
-          </FormGroup>
-          {this.state.validate === true ? (
-            <p style={{ color: "red" }}>{this.state.validateText}</p>
-          ) : (
-            <></>
-          )}
-          <FormGroup row>
-            <Col md={{ size: 10, offset: 2 }}>
-              <Button type="submit" color="primary">
-                Add Patient
-              </Button>
-            </Col>
-          </FormGroup>
-        </Form>
+            </div>
+          </div>
+
+          <div style={{ marginTop: "1.75rem", paddingTop: "1.25rem", borderTop: "1px solid var(--border)" }}>
+            <button
+              className="dt-btn dt-btn-primary"
+              style={{ width: "100%", padding: "0.75rem" }}
+              onClick={this.handleSubmit}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <>
+                  <div className="dt-spinner" style={{ width: 16, height: 16, borderWidth: 2 }}></div>
+                  Registering on blockchain...
+                </>
+              ) : (
+                <>
+                  <i className="fa fa-user-plus" aria-hidden="true"></i>
+                  Register Patient
+                </>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

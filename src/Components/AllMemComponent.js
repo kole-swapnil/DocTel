@@ -1,128 +1,132 @@
 import React, { Component } from "react";
-import { Card, CardTitle, CardBody, CardText } from "reactstrap";
+import "../App.css";
 import "./AllMemComponent.css";
 
-function AllDoctorRender({ doctor }) {
-  var style1 = "bg-success text-white";
+function DoctorCard({ doctor }) {
   return (
-    <Card className={style1} style={{ height: "18rem" }}>
-      <br />
-      <i className="fa fa-user fa-3x"></i>
-      <CardBody>
-        <CardTitle>Doctor Aadhar: {doctor?.doctorAadhar}</CardTitle>
-        <CardText>
-          <small>Account: {doctor?.doctorAddress}</small>
-        </CardText>
-        <CardText>
-          <small>Role: {doctor?.speciality}</small>
-        </CardText>
-      </CardBody>
-    </Card>
+    <div className="member-card">
+      <div className="member-avatar doctor-avatar">
+        <i className="fa fa-user-md" aria-hidden="true"></i>
+      </div>
+      <span className="member-role-badge doctor-badge">
+        <i className="fa fa-stethoscope" aria-hidden="true"></i> Doctor
+      </span>
+      <p className="member-aadhar">#{doctor?.doctorAadhar}</p>
+      <p className="member-address">{doctor?.doctorAddress}</p>
+      {doctor?.speciality && (
+        <p className="member-specialty">{doctor.speciality}</p>
+      )}
+    </div>
   );
 }
 
-function AllAdminRender({ admin }) {
-  var style2 = "bg-primary text-white";
-  if (admin) {
-    return (
-      <Card className={style2} style={{ height: "18rem" }}>
-        <br />
-        <i className="fa fa-user-secret fa-3x"></i>
-        <CardBody>
-          <CardTitle>Admin Aadhar: {admin.adminAadhar}</CardTitle>
-          <CardText>
-            <small>Account: {admin.adminAddr}</small>
-          </CardText>
-          <CardText>
-            <small>Role: {admin.role}</small>
-          </CardText>
-        </CardBody>
-      </Card>
-    );
-  } else {
-    return null;
-  }
+function AdminCard({ admin }) {
+  if (!admin) return null;
+  return (
+    <div className="member-card">
+      <div className="member-avatar admin-avatar">
+        <i className="fa fa-user-secret" aria-hidden="true"></i>
+      </div>
+      <span className="member-role-badge admin-badge">
+        <i className="fa fa-shield" aria-hidden="true"></i> Admin
+      </span>
+      <p className="member-aadhar">#{admin.adminAadhar}</p>
+      <p className="member-address">{admin.adminAddr}</p>
+      {admin.role && (
+        <p className="member-specialty">{admin.role}</p>
+      )}
+    </div>
+  );
 }
 
 class AllMemComponent extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      doctors: [],
-      admins: [],
-    };
+    this.state = { doctors: [], admins: [], loading: true };
   }
 
   async componentDidMount() {
-    console.log(
-      "Time start members AllMemComponent componentDidMount",
-      Date.now()
-    );
-    var resDoctorCount = await this.props.contract?.methods
-      .doctorCount()
-      .call();
-    var responseDoctors = [];
-    for (var i = 1; i <= resDoctorCount; i++) {
-      var resDoctor = await this.props.contract?.methods.doctorIds(i).call();
-      responseDoctors.push(resDoctor);
+    try {
+      const [resDoctorCount, resAdminCount] = await Promise.all([
+        this.props.contract?.methods.doctorCount().call(),
+        this.props.contract?.methods.adminCount().call(),
+      ]);
+
+      const doctorFetches = [];
+      for (let i = 1; i <= resDoctorCount; i++) {
+        doctorFetches.push(this.props.contract?.methods.doctorIds(i).call());
+      }
+      const adminFetches = [];
+      for (let i = 1; i <= resAdminCount; i++) {
+        adminFetches.push(this.props.contract?.methods.adminIds(i).call());
+      }
+
+      const [responseDoctors, responseAdmins] = await Promise.all([
+        Promise.all(doctorFetches),
+        Promise.all(adminFetches),
+      ]);
+
+      this.setState({ doctors: responseDoctors, admins: responseAdmins, loading: false });
+    } catch (err) {
+      this.setState({ loading: false });
     }
-    console.log(
-      "Time end doctor AllMemComponent componentDidMount",
-      Date.now()
-    );
-    this.setState({
-      doctors: responseDoctors,
-    });
-    console.log(
-      "Time start admin AllMemComponent componentDidMount",
-      Date.now()
-    );
-    var resAdminCount = await this.props.contract?.methods.adminCount().call();
-    var responseAdminsAddrs = [];
-    for (var i = 1; i <= resAdminCount; i++) {
-      var resAdmin = await this.props.contract?.methods.adminIds(i).call();
-      responseAdminsAddrs.push(resAdmin);
-    }
-    console.log("Time end admin AllMemComponent componentDidMount", Date.now());
-    this.setState({
-      admins: responseAdminsAddrs,
-    });
   }
 
   render() {
-    const AllDoctors = this.state.doctors?.map((x) => {
-      return (
-        <div key={x.doctor_Id} className="card1">
-          <AllDoctorRender doctor={x} />
-        </div>
-      );
-    });
+    const { loading, doctors, admins } = this.state;
 
-    const AllAdmins = this.state.admins?.map((y) => {
+    if (loading) {
       return (
-        <div key={y.admin_Id} className="card1">
-          <AllAdminRender admin={y} />
+        <div className="members-page">
+          <div className="dt-loading">
+            <div className="dt-spinner"></div>
+            Loading members...
+          </div>
         </div>
       );
-    });
+    }
 
     return (
-      <div>
-        <br />
-        <h2>All Members</h2>
-        <br />
-        <h4>Admins</h4>
-        <br />
-        <div className="row1">{AllAdmins}</div>
-        <br />
-        <h4 style={{ clear: "both" }}>Doctors</h4>
-        <br />
-        <div className="row2">{AllDoctors}</div>
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
+      <div className="members-page">
+        <div style={{ marginBottom: "2rem" }}>
+          <h2 className="section-title">Network Members</h2>
+          <p className="section-subtitle">
+            {admins.length} admin{admins.length !== 1 ? "s" : ""} · {doctors.length} doctor{doctors.length !== 1 ? "s" : ""} registered on-chain
+          </p>
+        </div>
+
+        {admins.length > 0 && (
+          <>
+            <div className="members-section-label">
+              <i className="fa fa-user-secret" aria-hidden="true"></i> Admins
+            </div>
+            <div className="members-grid">
+              {admins.map((y) => (
+                <AdminCard key={y.admin_Id} admin={y} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {doctors.length > 0 && (
+          <>
+            <div className="members-section-label">
+              <i className="fa fa-user-md" aria-hidden="true"></i> Doctors
+            </div>
+            <div className="members-grid">
+              {doctors.map((x) => (
+                <DoctorCard key={x.doctor_Id} doctor={x} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {admins.length === 0 && doctors.length === 0 && (
+          <div style={{ textAlign: "center", padding: "4rem 2rem", color: "var(--text-muted)" }}>
+            <i className="fa fa-users" style={{ fontSize: "3rem", display: "block", marginBottom: "1rem", opacity: 0.3 }} aria-hidden="true"></i>
+            <p>No members registered yet.</p>
+          </div>
+        )}
       </div>
     );
   }

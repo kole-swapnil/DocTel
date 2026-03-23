@@ -1,84 +1,91 @@
 import React, { Component } from "react";
 import moment from "moment";
 import "./HistoryComp.css";
+import "../App.css";
 
-const ETHER = 1000000000000000000;
-
-const getEventDisplayName = (eventName) => {
-  switch (eventName) {
-    case "treatAdded":
-      return "Treatment Added";
-    case "statsRecorded":
-      return "Vitals Recorded";
-    case "doctorAddedTreat":
-      return "Doctor Assigned";
-    case "PrescriptionAddedTreat":
-      return "Prescription Added";
-    case "ReportAddedTreat":
-      return "Report Added";
-    default:
-      return eventName;
-  }
+const EVENT_CONFIG = {
+  treatAdded: { label: "Treatment Added", icon: "medkit", color: "linear-gradient(135deg, #0369a1, #0ea5e9)" },
+  statsRecorded: { label: "Vitals Recorded", icon: "heartbeat", color: "linear-gradient(135deg, #dc2626, #ef4444)" },
+  doctorAddedTreat: { label: "Doctor Assigned", icon: "user-md", color: "linear-gradient(135deg, #059669, #10b981)" },
+  PrescriptionAddedTreat: { label: "Prescription Added", icon: "file-text", color: "linear-gradient(135deg, #7c3aed, #8b5cf6)" },
+  ReportAddedTreat: { label: "Report Added", icon: "file-medical", color: "linear-gradient(135deg, #0891b2, #06b6d4)" },
 };
 
-function AllEventrender({ treatEv, contract, accounts }) {
-  const getTimeFormat = (timeCreated) => {
-    let day = moment.unix(timeCreated);
-    let date = new Date(timeCreated * 1000);
-    let time = day.format("MMMM Do, YYYY [at] h:mm A");
-    return time;
-  };
+function getTimeFormat(timeCreated) {
+  return moment.unix(timeCreated).format("MMM D, YYYY [at] h:mm A");
+}
+
+function TimelineEvent({ ev }) {
+  const config = EVENT_CONFIG[ev?.event] || { label: ev?.event, icon: "circle", color: "#64748b" };
 
   return (
-    <div className="eventbox">
-      {(treatEv?.event === "PrescriptionAddedTreat" ||
-        treatEv?.event === "ReportAddedTreat") && (
-        <a
-          href={`https://ipfs.io/ipfs/${
-            treatEv?.returnValues.report || treatEv?.returnValues.prescription
-          }`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <img
-            style={{ maxWidth: "90%" }}
-            src={`https://ipfs.io/ipfs/${
-              treatEv?.returnValues.report || treatEv?.returnValues.prescription
-            }`}
-            alt="IPFS Content"
-          />
-        </a>
-      )}
-
-      <h6>Event: {getEventDisplayName(treatEv?.event)}</h6>
-
-      {treatEv?.event === "doctorAddedTreat" && (
-        <p>Doctor: {treatEv?.returnValues.docAadhar}</p>
-      )}
-
-      {treatEv?.event === "statsRecorded" && (
-        <div>
-          <p>Heart Rate: {treatEv?.returnValues.heartRate}</p>
-          <p>Systolic BP: {treatEv?.returnValues.systolicBP}</p>
-          <p>Diastolic BP: {treatEv?.returnValues.diastolicBP}</p>
-          <p>Temperature: {treatEv?.returnValues.temperature}</p>
+    <div className="timeline-item">
+      <div className="timeline-dot"></div>
+      <div className="timeline-card">
+        <div className="timeline-card-header">
+          <div className="timeline-event-name">
+            <div className="timeline-event-icon" style={{ background: config.color }}>
+              <i className={`fa fa-${config.icon}`} aria-hidden="true"></i>
+            </div>
+            {config.label}
+          </div>
+          <span className="timeline-time">
+            <i className="fa fa-clock-o" aria-hidden="true"></i>{" "}
+            {getTimeFormat(ev.returnValues.times)}
+          </span>
         </div>
-      )}
 
-      {treatEv?.event === "PrescriptionAddedTreat" && (
-        <p style={{ wordWrap: "break-word" }}>
-          Prescription: {treatEv?.returnValues.prescription}
-        </p>
-      )}
+        {ev?.event === "doctorAddedTreat" && (
+          <p className="timeline-detail">
+            <strong>Doctor Aadhar:</strong> {ev.returnValues.docAadhar}
+          </p>
+        )}
 
-      {treatEv?.event === "ReportAddedTreat" && (
-        <p style={{ wordWrap: "break-word" }}>
-          Report: {treatEv?.returnValues.report}
-        </p>
-      )}
+        {ev?.event === "statsRecorded" && (
+          <div className="dt-grid-2" style={{ gap: "0.4rem 1.5rem" }}>
+            <p className="timeline-detail"><strong>Heart Rate:</strong> {ev.returnValues.heartRate} bpm</p>
+            <p className="timeline-detail"><strong>Temperature:</strong> {ev.returnValues.temperature} °C</p>
+            <p className="timeline-detail"><strong>Systolic BP:</strong> {ev.returnValues.systolicBP} mmHg</p>
+            <p className="timeline-detail"><strong>Diastolic BP:</strong> {ev.returnValues.diastolicBP} mmHg</p>
+          </div>
+        )}
 
-      <p>Time: {getTimeFormat(treatEv.returnValues.times)}</p>
-      <br />
+        {ev?.event === "PrescriptionAddedTreat" && (
+          <div>
+            <div className="timeline-ipfs-img">
+              <a
+                href={`https://ipfs.io/ipfs/${ev.returnValues.prescription}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={`https://ipfs.io/ipfs/${ev.returnValues.prescription}`}
+                  alt="Prescription"
+                />
+              </a>
+            </div>
+            <p className="timeline-hash">{ev.returnValues.prescription}</p>
+          </div>
+        )}
+
+        {ev?.event === "ReportAddedTreat" && (
+          <div>
+            <div className="timeline-ipfs-img">
+              <a
+                href={`https://ipfs.io/ipfs/${ev.returnValues.report}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={`https://ipfs.io/ipfs/${ev.returnValues.report}`}
+                  alt="Report"
+                />
+              </a>
+            </div>
+            <p className="timeline-hash">{ev.returnValues.report}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -86,10 +93,7 @@ function AllEventrender({ treatEv, contract, accounts }) {
 class TreatmentHistoryComp extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      treatment: null,
-      treatmentEvents: [],
-    };
+    this.state = { treatment: null, treatmentEvents: [] };
   }
 
   async componentDidMount() {
@@ -105,58 +109,72 @@ class TreatmentHistoryComp extends Component {
       ...this.props.ReportAddedTreat,
     ];
 
-    treatmentEvents.sort(
-      (a, b) => a.returnValues.times - b.returnValues.times
-    );
-
+    treatmentEvents.sort((a, b) => a.returnValues.times - b.returnValues.times);
     this.setState({ treatment, treatmentEvents });
   }
 
   render() {
-    const eventItems = this.state.treatmentEvents.map((ev, idx) => (
-      <div key={idx} className="events">
-        <AllEventrender
-          treatEv={ev}
-          contract={this.props.contract}
-          accounts={this.props.accounts}
-        />
-        <br />
-        <br />
-      </div>
-    ));
+    const { treatment, treatmentEvents } = this.state;
 
     return (
-      <div className="body_style">
-        <br />
-        <h2>Treatment History</h2>
-        <br />
-        <i className="fa fa-medkit fa-5x plotimage"></i>
-        <div className="details">
-          <p>
-            <span className="column1">Treatment ID</span>{" "}
-            <span className="column2">
-              : {this.state.treatment?.treatment_Id}
-            </span>
-          </p>
-          <p>
-            <span className="column1">Patient Aadhar</span>{" "}
-            <span className="column2">
-              : {this.state.treatment?.patientAadhar}
-            </span>
-          </p>
-          <p>
-            <span className="column1">Admin Aadhar</span>{" "}
-            <span className="column2">
-              : {this.state.treatment?.adminAadhar}
-            </span>
-          </p>
+      <div className="history-page">
+        {/* Treatment info */}
+        <div className="history-header">
+          <div className="history-icon">
+            <i className="fa fa-medkit" aria-hidden="true"></i>
+          </div>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
+              <h2 style={{ margin: 0, fontSize: "1.4rem", fontWeight: 800, color: "var(--dark)" }}>
+                Treatment History
+              </h2>
+              <span style={{
+                padding: "0.2rem 0.65rem",
+                background: "#e0f2fe",
+                color: "#0369a1",
+                borderRadius: 999,
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+              }}>
+                #{treatment?.treatment_Id}
+              </span>
+            </div>
+            <div className="history-info-grid">
+              <div className="history-info-item">
+                <span className="history-info-label">Patient Aadhar</span>
+                <span className="history-info-value">{treatment?.patientAadhar || "—"}</span>
+              </div>
+              <div className="history-info-item">
+                <span className="history-info-label">Admin Aadhar</span>
+                <span className="history-info-value">{treatment?.adminAadhar || "—"}</span>
+              </div>
+              <div className="history-info-item">
+                <span className="history-info-label">Total Events</span>
+                <span className="history-info-value">{treatmentEvents.length}</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <hr />
-        <h2>Events</h2>
-        <br />
-        <div className="eventrow">{eventItems}</div>
-        <br />
-        <br />
+
+        {/* Timeline */}
+        <div className="events-section-title">
+          <i className="fa fa-history" aria-hidden="true"></i> Event Timeline
+        </div>
+
+        {treatmentEvents.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "3rem", color: "var(--text-muted)" }}>
+            <i className="fa fa-history" style={{ fontSize: "2.5rem", display: "block", marginBottom: "1rem", opacity: 0.3 }} aria-hidden="true"></i>
+            <p>No events recorded for this treatment yet.</p>
+          </div>
+        ) : (
+          <div className="timeline">
+            {treatmentEvents.map((ev, idx) => (
+              <TimelineEvent key={idx} ev={ev} />
+            ))}
+          </div>
+        )}
       </div>
     );
   }

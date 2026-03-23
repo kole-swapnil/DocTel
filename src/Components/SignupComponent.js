@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-import { Button, Alert } from "reactstrap";
-import { Link } from "react-router-dom";
 import "../App.css";
 import "./SignupComponent.css";
 
@@ -8,7 +6,6 @@ class SignUp extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      fullname: "",
       aadhar: 0,
       role: "",
       adminWallets: [],
@@ -16,7 +13,9 @@ class SignUp extends Component {
       walletAddress: "",
       location: "",
       speciality: "",
-      validate: <div></div>,
+      alertMsg: null,
+      alertType: "warning",
+      submitting: false,
     };
     this.handleSubmitDoctor = this.handleSubmitDoctor.bind(this);
     this.handleSubmitAdmin = this.handleSubmitAdmin.bind(this);
@@ -26,17 +25,12 @@ class SignUp extends Component {
     this.handleLogInAdmin = this.handleLogInAdmin.bind(this);
     this.handleLogInDoctor = this.handleLogInDoctor.bind(this);
     this.handleLogOut = this.handleLogOut.bind(this);
-    this.onDismiss = this.onDismiss.bind(this);
   }
 
   handleInputChange(event) {
     event.preventDefault();
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
-    this.setState({
-      [name]: value,
-    });
+    const { name, value } = event.target;
+    this.setState({ [name]: value });
   }
 
   async handleSubmitAdmin(event) {
@@ -44,335 +38,290 @@ class SignUp extends Component {
     if (this.handleValidateAdmin(this.props.accounts)) {
       this.addingAdmin();
     } else {
-      let validate = (
-        <div key={1}>
-          <Alert color="warning" toggle={this.onDismiss} fade={false}>
-            Do a login with different wallet. Account already exists
-          </Alert>
-        </div>
-      );
-      this.setState({
-        validate: validate,
-      });
+      this.setState({ alertMsg: "Account already exists. Login with a different wallet.", alertType: "warning" });
     }
   }
 
   async handleSubmitDoctor(event) {
     event.preventDefault();
-    console.log("Time started DoctorAdd", Date.now());
     if (this.handleValidateDoctor(this.state.aadhar)) {
       this.addingDoctor();
     } else {
-      let validate = (
-        <div key={1}>
-          <Alert color="warning" toggle={this.onDismiss} fade={false}>
-            Account with this Aadhar No. already exists. Please Login.
-          </Alert>
-        </div>
-      );
-      this.setState({
-        validate: validate,
-      });
+      this.setState({ alertMsg: "An account with this Aadhar already exists. Please login.", alertType: "warning" });
     }
   }
 
   addingAdmin = async () => {
-    console.log("Time started AdminAdd", Date.now());
-    console.log(this.state.aadhar, this.state.role);
-    const res = await this.props.contract.methods
-      .addAdmin(this.state.aadhar, this.props.accounts, this.state.role)
-      .send({ from: this.props.accounts, gas: 1000000 });
-    console.log("Time ended AdminAdd", Date.now());
+    this.setState({ submitting: true, alertMsg: null });
+    try {
+      await this.props.contract.methods
+        .addAdmin(this.state.aadhar, this.props.accounts, this.state.role)
+        .send({ from: this.props.accounts, gas: 1000000 });
+      this.setState({ alertMsg: "Admin registered successfully!", alertType: "success" });
+    } catch (err) {
+      this.setState({ alertMsg: `Transaction failed: ${err.message}`, alertType: "error" });
+    } finally {
+      this.setState({ submitting: false });
+    }
   };
 
   addingDoctor = async () => {
-    console.log("Time started DoctorAdd", Date.now());
-    console.log(
-      this.state.aadhar,
-      this.state.walletAddress,
-      this.state.speciality,
-      this.state.location
-    );
-    const res = await this.props.contract.methods
-      .addDoctor(
-        this.state.aadhar,
-        this.state.walletAddress,
-        this.state.speciality,
-        this.state.location
-      )
-      .send({ from: this.props.accounts, gas: 1000000 });
-    console.log("Time ended DoctorAdd", Date.now());
+    this.setState({ submitting: true, alertMsg: null });
+    try {
+      await this.props.contract.methods
+        .addDoctor(
+          this.state.aadhar,
+          this.state.walletAddress,
+          this.state.speciality,
+          this.state.location
+        )
+        .send({ from: this.props.accounts, gas: 1000000 });
+      this.setState({ alertMsg: "Doctor registered successfully!", alertType: "success" });
+    } catch (err) {
+      this.setState({ alertMsg: `Transaction failed: ${err.message}`, alertType: "error" });
+    } finally {
+      this.setState({ submitting: false });
+    }
   };
 
-  handleLogInAdmin = async (event) => {
+  handleLogInAdmin = (event) => {
     event.preventDefault();
     if (!this.handleValidateAdmin(this.props.accounts)) {
       localStorage.setItem("myAadhar", this.state.aadhar);
       this.props.changeAadhar(localStorage.getItem("myAadhar"));
+      this.setState({ alertMsg: "Logged in as admin.", alertType: "success" });
     } else {
-      let validate = (
-        <div key={1}>
-          <Alert color="warning" toggle={this.onDismiss} fade={false}>
-            Account with this Aadhar No. does not exist. Please Signup.
-          </Alert>
-        </div>
-      );
-      this.setState({
-        validate: validate,
-      });
+      this.setState({ alertMsg: "No admin account found for this wallet. Please sign up first.", alertType: "warning" });
     }
   };
 
-  handleLogInDoctor = async (event) => {
+  handleLogInDoctor = (event) => {
     event.preventDefault();
     if (!this.handleValidateDoctor(this.state.aadhar)) {
       localStorage.setItem("myAadhar", this.state.aadhar);
       this.props.changeAadhar(localStorage.getItem("myAadhar"));
+      this.setState({ alertMsg: "Logged in as doctor.", alertType: "success" });
     } else {
-      let validate = (
-        <div key={1}>
-          <Alert color="warning" toggle={this.onDismiss} fade={false}>
-            Account with this Aadhar No. does not exist. Please Signup.
-          </Alert>
-        </div>
-      );
-      this.setState({
-        validate: validate,
-      });
+      this.setState({ alertMsg: "No doctor account found with this Aadhar. Please sign up first.", alertType: "warning" });
     }
   };
 
-  handleLogOut = async (event) => {
+  handleLogOut = (event) => {
     event.preventDefault();
-    let y = localStorage.setItem("myAadhar", 0);
+    localStorage.setItem("myAadhar", 0);
     this.props.changeAadhar(localStorage.getItem("myAadhar"));
+    this.setState({ alertMsg: "Logged out successfully.", alertType: "success" });
   };
 
   handleValidateAdmin = (wallet) => {
-    if (this.state.adminWallets.includes(wallet.toString())) {
-      return false;
-    } else {
-      return true;
-    }
+    return !this.state.adminWallets.includes(wallet?.toString());
   };
 
   handleValidateDoctor = (aadhar) => {
-    if (this.state.docAadhars.includes(aadhar.toString())) {
-      return false;
-    } else {
-      return true;
-    }
+    return !this.state.docAadhars.includes(aadhar?.toString());
   };
-  onDismiss = () => this.setState({ validate: <div></div> });
 
   async componentDidMount() {
-    console.log("Time started AdminFetch", Date.now());
-    var resAdminCount = await this.props.contract?.methods.adminCount().call();
-    var responseAdminsWallets = [];
-    for (var i = 1; i <= resAdminCount; i++) {
-      var resAdmin = await this.props.contract?.methods.adminIds(i).call();
-      responseAdminsWallets.push(resAdmin);
-    }
-    let adWallets = responseAdminsWallets.map((ele) => {
-      return ele.adminAddr;
-    });
-    console.log("Time ended AdminFetch", Date.now());
-    console.log("Time started DoctorFetch", Date.now());
-    var resDoctorCount = await this.props.contract?.methods
-      .doctorCount()
-      .call();
-    var responseDoctors = [];
-    for (var i = 1; i <= resDoctorCount; i++) {
-      var resDoctor = await this.props.contract?.methods.doctorIds(i).call();
-      responseDoctors.push(resDoctor);
-    }
+    try {
+      const resAdminCount = await this.props.contract?.methods.adminCount().call();
+      const adminFetches = [];
+      for (let i = 1; i <= resAdminCount; i++) {
+        adminFetches.push(this.props.contract?.methods.adminIds(i).call());
+      }
+      const responseAdmins = await Promise.all(adminFetches);
+      const adWallets = responseAdmins.map((ele) => ele.adminAddr);
 
-    let doctorAads = responseDoctors.map((ele) => {
-      return ele.doctorAadhar;
-    });
-    console.log("Time ended DoctorFetch", Date.now());
-    this.setState({
-      adminWallets: adWallets,
-      docAadhars: doctorAads,
-    });
-    console.log(this.state.adminWallets, this.state.docAadhars);
+      const resDoctorCount = await this.props.contract?.methods.doctorCount().call();
+      const doctorFetches = [];
+      for (let i = 1; i <= resDoctorCount; i++) {
+        doctorFetches.push(this.props.contract?.methods.doctorIds(i).call());
+      }
+      const responseDoctors = await Promise.all(doctorFetches);
+      const doctorAads = responseDoctors.map((ele) => ele.doctorAadhar);
+
+      this.setState({ adminWallets: adWallets, docAadhars: doctorAads });
+    } catch (err) {
+      // Contract not available yet
+    }
   }
 
   render() {
-    return (
-      <React.Fragment>
-        <h1 className="head">SignUp Page</h1>
-        <div className="row">{this.state.validate}</div>
-        <div className="fullbox">
-          <div className="box1">
-            <h6 className="heading-style">Admin</h6>
-            <div className="sub-box1">
-              <i
-                className="fa fa-user-circle-o fa-4x"
-                aria-hidden="true"
-                style={{ paddingBottom: "5%" }}
-              ></i>
-              <br />
-              <div className="p-2">
-                <label className="label1"> Aadhar Number: </label>
-                <br />
-                <input
-                  className="input1"
-                  type="number"
-                  name="aadhar"
-                  placeholder="Enter Aadhar Number"
-                  onChange={this.handleInputChange}
-                  required
-                />
-              </div>
+    const { submitting, alertMsg, alertType } = this.state;
 
-              <div className="p-2">
-                <label className="label1"> Role: </label>
-                <br />
-                <input
-                  className="input1"
-                  type="text"
-                  name="role"
-                  placeholder="Enter Role"
-                  onChange={this.handleInputChange}
-                  required
-                />
+    const alertStyles = {
+      success: { background: "#f0fdf4", border: "1px solid #bbf7d0", color: "#14532d" },
+      warning: { background: "#fffbeb", border: "1px solid #fde68a", color: "#92400e" },
+      error: { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b" },
+    };
+
+    return (
+      <div className="signup-page">
+        <div style={{ marginBottom: "2rem" }}>
+          <h2 className="section-title">Register / Login</h2>
+          <p className="section-subtitle">Create your on-chain identity or login with an existing account</p>
+        </div>
+
+        {alertMsg && (
+          <div style={{
+            ...alertStyles[alertType],
+            padding: "0.9rem 1.25rem",
+            borderRadius: "var(--radius-sm)",
+            fontSize: "0.9rem",
+            marginBottom: "1.5rem",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}>
+            <span>{alertMsg}</span>
+            <button
+              onClick={() => this.setState({ alertMsg: null })}
+              style={{ background: "none", border: "none", cursor: "pointer", fontSize: "1.1rem", opacity: 0.6, lineHeight: 1 }}
+            >×</button>
+          </div>
+        )}
+
+        <div className="signup-grid">
+          {/* Admin Panel */}
+          <div className="signup-panel">
+            <div className="signup-panel-header">
+              <div className="signup-panel-icon admin-icon">
+                <i className="fa fa-user-secret" aria-hidden="true"></i>
               </div>
+              <div>
+                <p className="signup-panel-title">Admin</p>
+                <p className="signup-panel-subtitle">Hospital / Clinic Administrator</p>
+              </div>
+            </div>
+
+            <div className="signup-field">
+              <label className="dt-label">Aadhar Number</label>
+              <input
+                className="dt-input"
+                type="number"
+                name="aadhar"
+                placeholder="Enter Aadhar Number"
+                onChange={this.handleInputChange}
+              />
+            </div>
+            <div className="signup-field">
+              <label className="dt-label">Role / Designation</label>
+              <input
+                className="dt-input"
+                type="text"
+                name="role"
+                placeholder="e.g. Hospital Admin"
+                onChange={this.handleInputChange}
+              />
+            </div>
+
+            <div className="signup-actions">
               <button
-                className="signup-btn btn btn-block btn-sm btn-primary text-uppercase pl-3 pr-3"
-                type="submit"
+                className="signup-btn-full"
                 onClick={this.handleSubmitAdmin}
+                disabled={submitting}
               >
-                <Link
-                  to="/signup"
-                  style={{ textDecoration: "none", color: "white" }}
-                >
-                  Sign Up
-                </Link>
+                <i className="fa fa-user-plus" aria-hidden="true"></i>{" "}
+                {submitting ? "Signing Up..." : "Sign Up as Admin"}
               </button>
-              <Button
-                className="allbtn btn1"
-                type="submit"
-                onClick={this.handleLogInAdmin}
-              >
-                <Link
-                  to="/signup"
-                  style={{ textDecoration: "none", color: "white" }}
+              <div className="signup-btn-row">
+                <button
+                  className="signup-btn-secondary"
+                  onClick={this.handleLogInAdmin}
+                  disabled={submitting}
                 >
-                  Log In
-                </Link>
-              </Button>
-              <Button
-                className="allbtn"
-                type="submit"
-                onClick={this.handleLogOut}
-              >
-                <Link
-                  to="/signup"
-                  style={{ textDecoration: "none", color: "white" }}
+                  <i className="fa fa-sign-in" aria-hidden="true"></i> Log In
+                </button>
+                <button
+                  className="signup-btn-logout"
+                  onClick={this.handleLogOut}
                 >
-                  Log Out
-                </Link>
-              </Button>
+                  <i className="fa fa-sign-out" aria-hidden="true"></i> Log Out
+                </button>
+              </div>
             </div>
           </div>
-          <div className="box2">
-            <h6 className="heading-style">Doctor</h6>
-            <div className="sub-box2">
-              <i
-                className="fa fa-users fa-4x"
-                aria-hidden="true"
-                style={{ paddingBottom: "5%" }}
-              ></i>
-              <br />
-              <div className="p-2">
-                <label className="label1">Wallet Address: </label>
-                <br />
-                <input
-                  className="input1"
-                  type="text"
-                  name="walletAddress"
-                  placeholder="Enter walletAddress"
-                  onChange={this.handleInputChange}
-                  required
-                />
+
+          {/* Doctor Panel */}
+          <div className="signup-panel">
+            <div className="signup-panel-header">
+              <div className="signup-panel-icon doctor-icon">
+                <i className="fa fa-user-md" aria-hidden="true"></i>
               </div>
-              <div className="p-2">
-                <label className="label1"> Aadhar Number: </label>
-                <br />
-                <input
-                  className="input1"
-                  type="number"
-                  name="aadhar"
-                  placeholder="Enter Aadhar Number"
-                  onChange={this.handleInputChange}
-                  required
-                />
+              <div>
+                <p className="signup-panel-title">Doctor</p>
+                <p className="signup-panel-subtitle">Medical Professional</p>
               </div>
-              <div className="p-2">
-                <label className="label1"> Speciality: </label>
-                <br />
-                <input
-                  className="input1"
-                  type="text"
-                  name="speciality"
-                  placeholder="Enter Speciality"
-                  onChange={this.handleInputChange}
-                  required
-                />
-              </div>
-              <div className="p-2">
-                <label className="label1"> Location: </label>
-                <br />
-                <input
-                  className="input1"
-                  type="text"
-                  name="location"
-                  placeholder="Enter Location"
-                  onChange={this.handleInputChange}
-                  required
-                />
-              </div>
+            </div>
+
+            <div className="signup-field">
+              <label className="dt-label">Wallet Address</label>
+              <input
+                className="dt-input"
+                type="text"
+                name="walletAddress"
+                placeholder="0x..."
+                onChange={this.handleInputChange}
+              />
+            </div>
+            <div className="signup-field">
+              <label className="dt-label">Aadhar Number</label>
+              <input
+                className="dt-input"
+                type="number"
+                name="aadhar"
+                placeholder="Enter Aadhar Number"
+                onChange={this.handleInputChange}
+              />
+            </div>
+            <div className="signup-field">
+              <label className="dt-label">Speciality</label>
+              <input
+                className="dt-input"
+                type="text"
+                name="speciality"
+                placeholder="e.g. Cardiology"
+                onChange={this.handleInputChange}
+              />
+            </div>
+            <div className="signup-field">
+              <label className="dt-label">Location</label>
+              <input
+                className="dt-input"
+                type="text"
+                name="location"
+                placeholder="City, Hospital"
+                onChange={this.handleInputChange}
+              />
+            </div>
+
+            <div className="signup-actions">
               <button
-                className="signup-btn btn btn-block btn-sm btn-primary text-uppercase pl-3 pr-3"
-                type="submit"
+                className="signup-btn-full doctor-btn"
                 onClick={this.handleSubmitDoctor}
+                disabled={submitting}
               >
-                <Link
-                  to="/signup"
-                  style={{ textDecoration: "none", color: "white" }}
-                >
-                  Sign Up
-                </Link>
+                <i className="fa fa-user-plus" aria-hidden="true"></i>{" "}
+                {submitting ? "Signing Up..." : "Sign Up as Doctor"}
               </button>
-              <Button
-                className="allbtn btn1"
-                type="submit"
-                onClick={this.handleLogInDoctor}
-              >
-                <Link
-                  to="/signup"
-                  style={{ textDecoration: "none", color: "white" }}
+              <div className="signup-btn-row">
+                <button
+                  className="signup-btn-secondary"
+                  onClick={this.handleLogInDoctor}
+                  disabled={submitting}
                 >
-                  Log In
-                </Link>
-              </Button>
-              <Button
-                className="allbtn"
-                type="submit"
-                onClick={this.handleLogOut}
-              >
-                <Link
-                  to="/signup"
-                  style={{ textDecoration: "none", color: "white" }}
+                  <i className="fa fa-sign-in" aria-hidden="true"></i> Log In
+                </button>
+                <button
+                  className="signup-btn-logout"
+                  onClick={this.handleLogOut}
                 >
-                  Log Out
-                </Link>
-              </Button>
+                  <i className="fa fa-sign-out" aria-hidden="true"></i> Log Out
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </React.Fragment>
+      </div>
     );
   }
 }
