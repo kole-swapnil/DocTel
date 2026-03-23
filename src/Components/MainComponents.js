@@ -79,6 +79,7 @@ class Main extends Component {
       localStorage.setItem("wallet", accounts[0]);
 
       try {
+        console.log("[Main] fetching past events from block 11555373…");
         const [
           treatAddedEvents,
           doctorAddedTreatEvents,
@@ -86,12 +87,18 @@ class Main extends Component {
           PrescriptionAddedTreatEvents,
           ReportAddedTreatEvents,
         ] = await Promise.all([
-          instance.getPastEvents("treatAdded", { fromBlock: 11555373 }),
-          instance.getPastEvents("doctorAddedTreat", { fromBlock: 11555373 }),
-          instance.getPastEvents("statsRecorded", { fromBlock: 11555373 }),
-          instance.getPastEvents("PrescriptionAddedTreat", { fromBlock: 11555373 }),
-          instance.getPastEvents("ReportAddedTreat", { fromBlock: 11555373 }),
+          instance.getPastEvents("treatAdded", { fromBlock: 11555373, toBlock: "latest" }),
+          instance.getPastEvents("doctorAddedTreat", { fromBlock: 11555373, toBlock: "latest" }),
+          instance.getPastEvents("statsRecorded", { fromBlock: 11555373, toBlock: "latest" }),
+          instance.getPastEvents("PrescriptionAddedTreat", { fromBlock: 11555373, toBlock: "latest" }),
+          instance.getPastEvents("ReportAddedTreat", { fromBlock: 11555373, toBlock: "latest" }),
         ]);
+
+        console.log("[Main] treatAdded events:", treatAddedEvents.length, treatAddedEvents);
+        console.log("[Main] doctorAddedTreat events:", doctorAddedTreatEvents.length);
+        console.log("[Main] statsRecorded events:", statsRecordedEvents.length);
+        console.log("[Main] PrescriptionAddedTreat events:", PrescriptionAddedTreatEvents.length);
+        console.log("[Main] ReportAddedTreat events:", ReportAddedTreatEvents.length);
 
         this.setState({
           treatAddedEvents,
@@ -100,8 +107,8 @@ class Main extends Component {
           ReportAddedTreatEvents,
           statsRecordedEvents,
         });
-      } catch (_eventsError) {
-        // RPC may reject broad log queries — app still works without history
+      } catch (eventsError) {
+        console.error("[Main] getPastEvents failed:", eventsError.message);
       }
     } catch (error) {
       this.setState({ connectionError: error.message, connecting: false });

@@ -95,17 +95,22 @@ class AllTreatmentComponent extends Component {
     this.setState({ loading: true, loadError: null });
     try {
       const count = Number(await this.props.contract.methods.treatmentCount().call());
+      console.log("[AllTreatments] treatmentCount =", count);
       const allTreatments = [];
       for (let i = 1; i <= count; i++) {
         try {
+          console.log(`[AllTreatments] fetching treatments(${i})…`);
           const t = await this.props.contract.methods.treatments(i).call();
+          console.log(`[AllTreatments] treatments(${i}) =`, t);
           allTreatments.push(t);
-        } catch (_) {
-          // skip treatments that fail to decode
+        } catch (err) {
+          console.error(`[AllTreatments] treatments(${i}) failed:`, err.message);
         }
       }
+      console.log("[AllTreatments] done. Total loaded:", allTreatments.length);
       this.setState({ allTreatments, loading: false });
     } catch (err) {
+      console.error("[AllTreatments] loadAllTreatments failed:", err.message);
       this.setState({ loadError: err.message, loading: false });
     }
   }

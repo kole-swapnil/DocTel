@@ -1,0 +1,18 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - nvm install 16
+        - nvm use 16
+        - npm install
+    build:
+      commands:
+        - NODE_OPTIONS=--openssl-legacy-provider react-scripts --max_old_space_size=8192 build
+  artifacts:
+    baseDirectory: build
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
