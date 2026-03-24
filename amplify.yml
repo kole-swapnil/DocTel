@@ -3,9 +3,12 @@ frontend:
   phases:
     preBuild:
       commands:
+        - nvm install 16
+        - nvm use 16
         - npm install
     build:
       commands:
+        - nvm use 16
         - npm run build
   artifacts:
     baseDirectory: build
